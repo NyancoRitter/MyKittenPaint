@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MyKittenPaint
+{
+	/// <summary>
+	/// <see cref="ToolForm"/>で成された操作に対するリスナ．
+	/// 操作に対応した処理の実装側．
+	/// </summary>
+	public interface IToolViewOpListener
+	{
+		/// <summary>
+		/// ツールの選択操作が成されたとき
+		/// </summary>
+		/// <param name="SelectedType">選択されたツール種類</param>
+		void OnSelectedToolChanged( ToolType SelectedType );
+
+		/// <summary>
+		/// 範囲選択ツールのモードが変更されたとき
+		/// </summary>
+		/// <param name="SelectedMode">選択されたモード</param>
+		void OnSelectionModeChanged( SelectionModeType SelectedMode );
+
+		/// <summary>
+		/// （ペースト等の際に）背景色部分を透過するか否かが変更されたとき
+		/// </summary>
+		/// <param name="Trans">透過するか否か</param>
+		void OnTransBackModeChanged( bool Trans );
+	}
+}

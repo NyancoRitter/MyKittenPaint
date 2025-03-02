@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FC8BD257-7111-4E7E-8842-C9A8764E5EED}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>MyKittenPaint</RootNamespace>
+    <AssemblyName>MyKittenPaint</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>MyKittenPaint.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ColorsUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ColorsUC.Designer.cs">
+      <DependentUpon>ColorsUC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Content.cs" />
+    <Compile Include="Edits\Edit_ImgRect.cs" />
+    <Compile Include="Edits\Edit_Line.cs" />
+    <Compile Include="Edits\Edit_SizeChange.cs" />
+    <Compile Include="FlipRotateDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FlipRotateDlg.Designer.cs">
+      <DependentUpon>FlipRotateDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GridSizeDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GridSizeDlg.Designer.cs">
+      <DependentUpon>GridSizeDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IColorViewOpListener.cs" />
+    <Compile Include="Edits\IEdit.cs" />
+    <Compile Include="IView.cs" />
+    <Compile Include="IToolViewOpListener.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Presenter.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SizeDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SizeDlg.Designer.cs">
+      <DependentUpon>SizeDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ThumbnailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ThumbnailForm.Designer.cs">
+      <DependentUpon>ThumbnailForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ToolsUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ToolsUC.Designer.cs">
+      <DependentUpon>ToolsUC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\ColorPickTool.cs" />
+    <Compile Include="Tools\EraserTool.cs" />
+    <Compile Include="Tools\ITool.cs" />
+    <Compile Include="Tools\LineTool.cs" />
+    <Compile Include="Tools\FillTool.cs" />
+    <Compile Include="Tools\PenTool.cs" />
+    <Compile Include="Tools\RectSelTool.cs" />
+    <Compile Include="Tools\ToolType.cs" />
+    <Compile Include="Util.cs" />
+    <Compile Include="VersionDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VersionDlg.Designer.cs">
+      <DependentUpon>VersionDlg.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="ColorsUC.resx">
+      <DependentUpon>ColorsUC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FlipRotateDlg.resx">
+      <DependentUpon>FlipRotateDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GridSizeDlg.resx">
+      <DependentUpon>GridSizeDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="SizeDlg.resx">
+      <DependentUpon>SizeDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ThumbnailForm.resx">
+      <DependentUpon>ThumbnailForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ToolsUC.resx">
+      <DependentUpon>ToolsUC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VersionDlg.resx">
+      <DependentUpon>VersionDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Pen.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TransBack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FreeSel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RectSel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Loupe.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MyKittenPaint.ico" />
+    <None Include="Resources\DotCat32.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
