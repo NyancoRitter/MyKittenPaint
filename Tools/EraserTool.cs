@@ -18,30 +18,47 @@ namespace MyKittenPaint
 		//	※ 値 None を「描画作業中ではない」という意味合いで用いている 
 		private MouseButtons m_DraggingButton = MouseButtons.None;
 
+		//表示用
+		private Point m_CenterPos;
+
 		//-----------------------------------
 
 		/// <summary>ctor</summary>
+		public EraserTool()
+		{	Setup( Color.Black, Color.White, 1 );	}
+
+		/// <summary>セットアップ</summary>
 		/// <param name="LeftColor">左ボタンの色</param>
 		/// <param name="RightColor">右ボタンの色</param>
 		/// <param name="Size">描画正方形のサイズ（一片の長さ）．ただし奇数想定．</param>
-		public EraserTool( Color LeftColor, Color RightColor, int Size )
+		public void Setup( Color LeftColor, Color RightColor, int Size )
 		{
 			this.LeftColor = LeftColor;
 			this.RightColor = RightColor;
-			this.Radius = Math.Max( 1, (Size/2) );
+			ChangeSize( Size );
 		}
+
+		/// <summary>
+		/// 描画サイズの変更
+		/// </summary>
+		/// <param name="Size">描画正方形のサイズ（一片の長さ）．ただし奇数想定．</param>
+		public void ChangeSize( int Size )
+		{	this.Radius = Math.Max( 1, (Size/2) );	}
 
 		//-----------------------------------
 
 		private Color LeftColor{	get;	set;	}
 		private Color RightColor{	get;	set;	}
-		private int Radius{	get;	set;	}
+		private int Radius{	get;	set;	}	//※描画範囲は中央画素から上下左右にこのサイズ分（：一辺が Radius*2+1 な正方形）
 
 		//-----------------------------------
 		#region ITool Impl
 
 		/// <inheritdoc/>
 		public ToolType Type => ToolType.Eraser;
+
+		/// <inheritdoc/>
+		public bool IsBusy(){	return m_DraggingButton != MouseButtons.None;	}
 
 		/// <inheritdoc/>
 		public IEdit CreateEdit()
@@ -52,7 +69,11 @@ namespace MyKittenPaint
 
 		/// <inheritdoc/>
 		public void DrawStateToViewImg(Graphics g, int MagRate)
-		{	/*NOP*/	}
+		{
+			var Rect = new Rectangle( m_CenterPos, new Size(2*Radius+1,2*Radius+1) );
+			Rect.Offset( -Radius, -Radius );
+			Util.DrawRectSelectionState( g, Rect, MagRate, true );
+		}
 
 		/// <inheritdoc/>
 		public ToolProcResult OnMouseDown(Point pos, MouseButtons button, Bitmap BMP)
@@ -67,7 +88,9 @@ namespace MyKittenPaint
 				{	return ToolProcResult.None;	}
 
 				m_Points.Clear();
-				return ( Erase( pos, BMP )  ?  ToolProcResult.ShouldUpdateView  :  ToolProcResult.None );
+				m_CenterPos = pos;
+				Erase( pos, BMP );
+				return ToolProcResult.ShouldUpdateView;
 			}
 			else if( m_DraggingButton != button )
 			{//現在と異なるボタンが押された場合，描画をキャンセル
@@ -81,8 +104,11 @@ namespace MyKittenPaint
 		/// <inheritdoc/>
 		public ToolProcResult OnMouseMove(Point pos, Bitmap BMP)
 		{
-			if( m_DraggingButton==MouseButtons.None )return ToolProcResult.None;
-			return ( Erase( pos, BMP )  ?  ToolProcResult.ShouldUpdateView  :  ToolProcResult.None );
+			if( pos.Equals(m_CenterPos) )return ToolProcResult.None;
+			m_CenterPos = pos;
+			if( m_DraggingButton!=MouseButtons.None )
+			{	Erase( pos, BMP );	}
+			return ToolProcResult.ShouldUpdateView;
 		}
 
 		/// <inheritdoc/>

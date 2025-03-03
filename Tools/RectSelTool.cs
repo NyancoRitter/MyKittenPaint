@@ -43,13 +43,16 @@ namespace MyKittenPaint
 		public ToolType Type => ToolType.Select;
 
 		/// <inheritdoc/>
+		public bool IsBusy(){	return m_IsDragging;	}
+
+		/// <inheritdoc/>
 		public IEdit CreateEdit()
 		{	return null;	}
 
 		/// <inheritdoc/>
 		public void DrawStateToViewImg(Graphics g, int MagRate)
 		{
-			if( m_Pos[0].Equals( m_Pos[1] ) )return;
+			if( !IsBusy() || m_Pos[0].Equals( m_Pos[1] ) )return;
 
 			Util.DrawRectSelectionState( g, SelectedRect, MagRate );
 		}
@@ -59,7 +62,10 @@ namespace MyKittenPaint
 		{
 			//左ドラッグ中に他のマウスボタンが押された場合はキャンセル
 			if( m_IsDragging && !button.HasFlag(MouseButtons.Left) )
-			{	return ToolProcResult.EditShouldBeRejected;	}
+			{
+				m_IsDragging = false;
+				return ToolProcResult.EditShouldBeRejected;
+			}
 
 			//ドラッグできるのは左ボタンのみとする
 			if( !button.HasFlag( MouseButtons.Left ) )return ToolProcResult.None;
@@ -93,6 +99,7 @@ namespace MyKittenPaint
 		{
 			if( !m_IsDragging )return ToolProcResult.None;
 			if( !button.HasFlag( MouseButtons.Left ) )return ToolProcResult.None;
+			m_IsDragging = false;
 			//1x1 は不可
 			if( m_Pos[0].Equals( m_Pos[1] ) )return ToolProcResult.EditShouldBeRejected;
 

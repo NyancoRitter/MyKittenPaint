@@ -12,7 +12,7 @@ namespace MyKittenPaint
 	/// </summary>
 	public class PenTool : ITool
 	{
-		private readonly Pen m_Pen;	//描画用のペン
+		private Pen m_Pen;	//描画用のペン
 
 		//描画履歴データ
 		private List<Point> m_Points = new List<Point>();
@@ -29,9 +29,23 @@ namespace MyKittenPaint
 		//-----------------------------------
 
 		/// <summary>ctor</summary>
+		public PenTool()
+		{	Setup( Color.Black );	}
+
+		/// <summary>
+		/// セットアップ
+		/// </summary>
 		/// <param name="DrawColor">描画色</param>
-		public PenTool( Color DrawColor )
-		{	m_Pen = new Pen( DrawColor );	}
+		public void Setup( Color DrawColor )
+		{
+			if( m_Pen==null )
+			{	m_Pen = new Pen( DrawColor );	}
+			else if( !m_Pen.Color.Equals( DrawColor ) )
+			{
+				m_Pen.Dispose();
+				m_Pen = new Pen( DrawColor );
+			}
+		}
 
 		//-----------------------------------
 
@@ -43,6 +57,9 @@ namespace MyKittenPaint
 
 		/// <inheritdoc/>
 		public ToolType Type => ToolType.Pen;
+
+		/// <inheritdoc/>
+		public bool IsBusy(){	return m_DraggingButton != MouseButtons.None;	}
 
 		/// <inheritdoc/>
 		public IEdit CreateEdit()

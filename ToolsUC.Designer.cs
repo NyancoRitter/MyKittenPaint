@@ -488,6 +488,7 @@ namespace MyKittenPaint
 			this.Eraser3x3_radioButton.TabStop = true;
 			this.Eraser3x3_radioButton.Text = "3x3";
 			this.Eraser3x3_radioButton.UseVisualStyleBackColor = true;
+			this.Eraser3x3_radioButton.CheckedChanged += new System.EventHandler(this.EraserSize_radioButton_CheckedChanged);
 			// 
 			// Eraser5x5_radioButton
 			// 
@@ -499,6 +500,7 @@ namespace MyKittenPaint
 			this.Eraser5x5_radioButton.TabStop = true;
 			this.Eraser5x5_radioButton.Text = "5x5";
 			this.Eraser5x5_radioButton.UseVisualStyleBackColor = true;
+			this.Eraser5x5_radioButton.CheckedChanged += new System.EventHandler(this.EraserSize_radioButton_CheckedChanged);
 			// 
 			// Eraser7x7_radioButton
 			// 
@@ -510,6 +512,7 @@ namespace MyKittenPaint
 			this.Eraser7x7_radioButton.TabStop = true;
 			this.Eraser7x7_radioButton.Text = "7x7";
 			this.Eraser7x7_radioButton.UseVisualStyleBackColor = true;
+			this.Eraser7x7_radioButton.CheckedChanged += new System.EventHandler(this.EraserSize_radioButton_CheckedChanged);
 			// 
 			// Eraser9x9_radioButton
 			// 
@@ -521,6 +524,7 @@ namespace MyKittenPaint
 			this.Eraser9x9_radioButton.TabStop = true;
 			this.Eraser9x9_radioButton.Text = "9x9";
 			this.Eraser9x9_radioButton.UseVisualStyleBackColor = true;
+			this.Eraser9x9_radioButton.CheckedChanged += new System.EventHandler(this.EraserSize_radioButton_CheckedChanged);
 			// 
 			// Eraser11x11_radioButton
 			// 
@@ -532,6 +536,7 @@ namespace MyKittenPaint
 			this.Eraser11x11_radioButton.TabStop = true;
 			this.Eraser11x11_radioButton.Text = "11x11";
 			this.Eraser11x11_radioButton.UseVisualStyleBackColor = true;
+			this.Eraser11x11_radioButton.CheckedChanged += new System.EventHandler(this.EraserSize_radioButton_CheckedChanged);
 			// 
 			// label8
 			// 

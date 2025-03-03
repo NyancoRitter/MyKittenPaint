@@ -34,6 +34,9 @@ namespace MyKittenPaint
 		public ToolType Type => ToolType.Pen;	//※現状，Penとする
 
 		/// <inheritdoc/>
+		public bool IsBusy(){	return m_iDrawColor>=0;	}
+
+		/// <inheritdoc/>
 		public IEdit CreateEdit(){	return null;	}	//画像の編集は無い
 
 		/// <inheritdoc/>
@@ -66,7 +69,10 @@ namespace MyKittenPaint
 		public ToolProcResult OnMouseUp(Point pos, MouseButtons button, Bitmap BMP)
 		{
 			if( m_iDrawColor>=0  &&  m_iDrawColor==Util.DrawColorIndexFor( button ) )
-			{	return ToolProcResult.EditCompleted;	}
+			{
+				m_iDrawColor = -1;
+				return ToolProcResult.ShouldUpdateView;
+			}
 
 			return ToolProcResult.None;
 		}

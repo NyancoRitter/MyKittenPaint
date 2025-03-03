@@ -439,6 +439,10 @@ namespace MyKittenPaint
 			{	m_IView.OnImgPainted();	}
 		}
 
+		/// <inheritdoc/>
+		public void OnEraserSizeChanged( int Size )
+		{	m_NormalState.OnEraserToolSizeChanged( Size );	}
+
 		#endregion
 		//-----------------------------------
 		#region IColorFormOpListener Impl
@@ -534,6 +538,7 @@ namespace MyKittenPaint
 		/// <param name="NewState"></param>
 		private void ChangeCurrStateTo( IState NewState )
 		{
+			if( m_CurrState == NewState )return;
 			m_CurrState?.PreLeave();
 			m_CurrState = NewState;
 			m_CurrState.OnEnter();
@@ -658,80 +663,111 @@ namespace MyKittenPaint
 		{
 			private Presenter m_Owner;
 			private Bitmap m_EditImg;	//画像編集用バッファ
-			private ITool m_UsingTool = null;
+			private ITool m_CurrTool = null;
 
-			public NormalState( Presenter Owner ){	m_Owner = Owner;	}
+			//
+			private ColorPickTool m_ColorPickTool;
+			private PenTool m_PenTool = new PenTool();
+			private LineTool m_LineTool = new LineTool();
+			private EraserTool m_EraserTool = new EraserTool();
+			private RectSelTool m_RectSelTool = new RectSelTool();
+			private FillTool m_FillTool = new FillTool();
+
+			/// <summary>ctor</summary>
+			/// <param name="Owner"></param>
+			public NormalState( Presenter Owner )
+			{	
+				m_Owner = Owner;
+				m_ColorPickTool = new ColorPickTool( Owner );
+				m_CurrTool = m_PenTool;
+
+				m_RectSelTool.ShowDraggingAreaSize += (Size size)=>{	Owner.m_IView.UpdateSizeInfoView(size);	};
+				m_RectSelTool.OnRectAreaSelected += Owner.OnRectAreaSelected;
+			}
+
+			/// <summary>
+			/// Eraserルールのサイズが変更されたとき
+			/// </summary>
+			/// <param name="Size">サイズ．(e.g. 3x3ならば3</param>
+			public void OnEraserToolSizeChanged( int Size )
+			{
+				m_EraserTool.ChangeSize( Size );
+				if( m_CurrTool.Type == ToolType.Eraser )
+				{	m_Owner.m_IView?.OnImgPainted();	}
+			}
 
 			//--------------
 			#region IState Impl
 
-			public void PreLeave(){	m_UsingTool=null;	Util.DisposeBMP( ref m_EditImg );	}
+			public void PreLeave(){	Util.DisposeBMP( ref m_EditImg );	}
 			public void OnEnter(){	/*NOP*/	}
 			public void OnOutsidePosClicked( System.Windows.Forms.MouseButtons button ){	/*NOP*/	}
 
 			//
 			public void OnMouseDown( Point ImgPos, System.Windows.Forms.MouseButtons button )
 			{
-				if( m_UsingTool==null )
+				if( !m_CurrTool.IsBusy() )
 				{//※操作開始時
-					m_UsingTool = CreateTool_to_StartUsing( m_Owner.m_CurrSelToolType, button, m_Owner );
-
-					if( m_UsingTool != null )
-					{
-						if( m_EditImg!=null )m_EditImg.Dispose();
-						m_EditImg = m_Owner.m_Content.CreateCurrImgClone();
-					}
+					if( !SetupTool( m_Owner.m_CurrSelToolType, button, m_Owner ) )
+					{	return;	}
+					
+					Util.DisposeBMP( ref m_EditImg );
+					m_EditImg = m_Owner.m_Content.CreateCurrImgClone();
+					
 				}
 				//マウス押下時処理の実施
-				if( m_UsingTool != null )
-				{	HandleToolResult( m_UsingTool.OnMouseDown( ImgPos, button, m_EditImg ) );	}
+				HandleToolResult( m_CurrTool.OnMouseDown( ImgPos, button, m_EditImg ) );
 			}
 
 			//
 			public void OnMouseUp( Point ImgPos, System.Windows.Forms.MouseButtons button )
-			{
-				if( m_UsingTool != null )
-				{	HandleToolResult( m_UsingTool.OnMouseUp(ImgPos, button, m_EditImg) );	}
-			}
+			{	HandleToolResult( m_CurrTool.OnMouseUp(ImgPos, button, m_EditImg) );	}
 
 			//
 			public void OnMouseMove( Point ImgPos )
-			{
-				if( m_UsingTool != null )
-				{	HandleToolResult( m_UsingTool.OnMouseMove(ImgPos, m_EditImg) );	}
-			}
+			{	HandleToolResult( m_CurrTool.OnMouseMove(ImgPos, m_EditImg) );	}
 
 			//
 			public void DrawCurrentView( Graphics g )
 			{
 				int MagRate = m_Owner.ViewMagnificationRate;
 
-				if( m_UsingTool==null )
-				{
-					m_Owner.m_Content.DrawMagnifiedImgTo( g, MagRate );
-					m_Owner.DrawGrid( g );
-				}
+				if( m_CurrTool.IsBusy() )
+				{	Util.DrawMagnifiedImg( g, m_EditImg, MagRate );	}
 				else
-				{
-					Util.DrawMagnifiedImg( g, m_EditImg, MagRate );
-					m_Owner.DrawGrid( g );
-					m_UsingTool.DrawStateToViewImg( g, MagRate );
-				}
-			}
+				{	m_Owner.m_Content.DrawMagnifiedImgTo( g, MagRate );	}
 
-			public void DrawThumbnail( Graphics g )
-			{
-				if( m_UsingTool==null )
-				{	m_Owner.m_Content.DrawMagnifiedImgTo( g, 1 );	}
-				else
-				{	Util.DrawMagnifiedImg( g, m_EditImg, 1 );	}
+				m_Owner.DrawGrid( g );
+				m_CurrTool.DrawStateToViewImg( g, MagRate );
 			}
 
 			//
-			public bool IsBusy(){	return m_UsingTool!=null;	}	//※編集操作中は禁止
+			public void DrawThumbnail( Graphics g )
+			{
+				if( m_CurrTool.IsBusy() )
+				{	Util.DrawMagnifiedImg( g, m_EditImg, 1 );	}
+				else
+				{	m_Owner.m_Content.DrawMagnifiedImgTo( g, 1 );	}
+			}
+
+			//
+			public bool IsBusy(){	return  m_CurrTool.IsBusy();	}
 			public bool ClearSelection(){	return false;	}
 			public void OnToolSelected( ToolType SelectedTool )
-			{	if( IsBusy() )throw new InvalidOperationException( "Tool Changed During Busy!!");	}
+			{
+				if( IsBusy() )throw new InvalidOperationException( "Tool Changed During Busy!!");
+				
+				switch( SelectedTool )
+				{
+				case ToolType.Pen:	m_CurrTool = m_PenTool;	break;
+				case ToolType.Line:	m_CurrTool = m_LineTool;	break;
+				case ToolType.Eraser:	m_CurrTool = m_EraserTool;	break;
+				case ToolType.Fill:	m_CurrTool = m_FillTool;	break;
+				case ToolType.Select:	m_CurrTool = m_RectSelTool;	break;
+				}
+
+				m_Owner.m_IView?.OnImgPainted();
+			}
 
 			public void Copy( bool IsCut ){	/*NOP*/	}
 			public void PrePaste(){	/*NOP*/	}
@@ -752,46 +788,52 @@ namespace MyKittenPaint
 			#region private
 
 			/// <summary>
-			/// マウスボタンが押された際の作業関数．使用すべきツールオブジェクトを生成して返す
+			/// マウスボタンが押された際の作業関数．使用すべきツールオブジェクトをセットアップし，m_CurrToolに選択．
 			/// </summary>
-			/// <param name="CurrSelTool">現在選択されているツール種類</param>
+			/// <param name="CurrSelTool">現在GUIで選択されているツール種類</param>
 			/// <param name="button">押されたボタン</param>
 			/// <param name="Owner">Presenter</param>
 			/// <returns>
-			/// ツール．ただし該当無しの場合には null
+			/// 成否．使用すべきツールが無い場合には false．
 			/// </returns>
-			private static ITool CreateTool_to_StartUsing( ToolType CurrSelTool, System.Windows.Forms.MouseButtons button, Presenter Owner )
+			private bool SetupTool( ToolType CurrSelTool, System.Windows.Forms.MouseButtons button, Presenter Owner )
 			{
 				int iDrawColor = Util.DrawColorIndexFor( button );
-				if( iDrawColor<0 )return null;
+				if( iDrawColor<0 )return false;
 
 				//Ctrlキー押下時にスポイトツールとして働く場合
 				if( 
 					System.Windows.Forms.Control.ModifierKeys.HasFlag( System.Windows.Forms.Keys.Control ) &&
 					ShouldActAsColorPicker_when_Ctrl( CurrSelTool )
 				)
-				{	return new ColorPickTool( Owner );	}
-
+				{
+					m_CurrTool = m_ColorPickTool;
+					return true;
+				}
 
 				switch( CurrSelTool )
 				{
 				case ToolType.Pen:
-					return new PenTool( Owner.m_DrawColor[iDrawColor] );
+					m_PenTool.Setup( Owner.m_DrawColor[iDrawColor] );
+					m_CurrTool = m_PenTool;
+					return true;
 				case ToolType.Line:
-					return new LineTool( Owner.m_DrawColor[iDrawColor], Owner.m_IView.CraeteLineToolSetting() );
+					m_LineTool.Setup( Owner.m_DrawColor[iDrawColor], Owner.m_IView.CraeteLineToolSetting() );
+					m_CurrTool = m_LineTool;
+					return true;
 				case ToolType.Select:
-					{
-						var Tool = new RectSelTool();
-						Tool.ShowDraggingAreaSize += (Size size)=>{	Owner.m_IView.UpdateSizeInfoView(size);	};
-						Tool.OnRectAreaSelected += Owner.OnRectAreaSelected;
-						return Tool;
-					}
+					m_CurrTool = m_RectSelTool;
+					return true;
 				case ToolType.Eraser:
-					return new EraserTool( Owner.m_DrawColor[0], Owner.m_DrawColor[1], Owner.m_IView.GetEraserToolSize() );
+					m_EraserTool.Setup( Owner.m_DrawColor[0], Owner.m_DrawColor[1], Owner.m_IView.GetEraserToolSize() );
+					m_CurrTool = m_EraserTool;
+					return true;
 				case ToolType.Fill:
-					return new FillTool( Owner.m_DrawColor[iDrawColor] );
+					m_FillTool.Setup( Owner.m_DrawColor[iDrawColor] );
+					m_CurrTool = m_FillTool;
+					return true;
 				default:
-					return null;
+					return false;
 				}
 			}
 
@@ -816,19 +858,17 @@ namespace MyKittenPaint
 					{
 						if( m_Owner.m_Content.IsSame( m_EditImg ) )
 						{
-							m_UsingTool = null;
 							m_Owner.m_IView.OnImgPainted();
 						}
 						else
 						{
-							var Editor = m_UsingTool.CreateEdit();
-							m_UsingTool = null;
+							var Editor = m_CurrTool.CreateEdit();
 							m_Owner.EditWith( Editor );
 						}
 					}
 					break;
 				case ToolProcResult.EditShouldBeRejected:
-					m_UsingTool = null;
+					//m_UsingTool = null;
 					m_Owner.m_IView.OnImgPainted();
 					break;
 				default:

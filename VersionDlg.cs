@@ -26,7 +26,7 @@ namespace MyKittenPaint
 		{
 			if( DesignMode )return;
 			
-			Version_label.Text = "Version 1.0.0 (250228-A)";
+			Version_label.Text = "Version 1.0.0 (2500303-A)";
 		}
 	}
 }

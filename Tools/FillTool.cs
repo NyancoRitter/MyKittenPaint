@@ -12,7 +12,7 @@ namespace MyKittenPaint
 	public class FillTool : ITool
 	{
 		//塗りつぶし色
-		private readonly Color m_Color;
+		private Color m_Color;
 
 		//描画履歴データ
 		private List<Point> m_Points = new List<Point>();
@@ -24,8 +24,12 @@ namespace MyKittenPaint
 		//-----------------------------------
 
 		/// <summary>ctor</summary>
+		public FillTool()
+		{	Setup( Color.Black );	}
+
+		/// <summary>セットアップ</summary>
 		/// <param name="DrawColor">描画色</param>
-		public FillTool( Color DrawColor )
+		public void Setup( Color DrawColor )
 		{	m_Color = DrawColor;	}
 
 		//-----------------------------------
@@ -33,6 +37,9 @@ namespace MyKittenPaint
 
 		/// <inheritdoc/>
 		public ToolType Type => ToolType.Fill;
+
+		/// <inheritdoc/>
+		public bool IsBusy(){	return m_DraggingButton != MouseButtons.None;	}
 
 		/// <inheritdoc/>
 		public IEdit CreateEdit()

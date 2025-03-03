@@ -35,6 +35,8 @@ namespace MyKittenPaint
 		/// <summary>描画ツール種類</summary>
 		ToolType Type{	get;	}
 
+		bool IsBusy();
+
 		//----------
 		//操作入力
 		//（MEMO : 特殊キーの状態については引数ではなく別途 Control.ModifierKeys から得ること）

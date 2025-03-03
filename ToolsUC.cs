@@ -136,6 +136,19 @@ namespace MyKittenPaint
 
 		#endregion
 		//-----------------------------------
+		#region Eraser Tool
+
+		private void EraserSize_radioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			if( Eraser3x3_radioButton.Checked ){	Observer?.OnEraserSizeChanged(3);	return;	}
+			if( Eraser5x5_radioButton.Checked ){	Observer?.OnEraserSizeChanged(5);	return;	}
+			if( Eraser7x7_radioButton.Checked ){	Observer?.OnEraserSizeChanged(7);	return;	}
+			if( Eraser9x9_radioButton.Checked ){	Observer?.OnEraserSizeChanged(9);	return;	}
+			if( Eraser11x11_radioButton.Checked ){	Observer?.OnEraserSizeChanged(11);	return;	}
+		}
+
+		#endregion
+		//-----------------------------------
 
 	}
 }

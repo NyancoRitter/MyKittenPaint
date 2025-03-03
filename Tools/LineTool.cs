@@ -11,9 +11,9 @@ namespace MyKittenPaint
 	/// </summary>
 	public class LineTool : ITool
 	{
-		private readonly Pen m_Pen;	//描画用のペン
-		private int m_Thickness;
-		private bool m_RoundEnd;
+		private Pen m_Pen;	//描画用のペン
+		private int m_Thickness = 1;
+		private bool m_RoundEnd = false;
 
 		//頂点座標
 		private Point[] m_Points = new Point[2];
@@ -43,14 +43,22 @@ namespace MyKittenPaint
 		}
 
 		/// <summary>ctor</summary>
+		public LineTool()
+		{	Setup( Color.Black, new Settings() );	}
+
+		/// <summary>
+		/// セットアップ
+		/// </summary>
 		/// <param name="DrawColor">描画色</param>
-		/// <param name="thickness">太さ（1以上）</param>
-		/// <param name="RoundEnd">先端を丸めるか否か（太さが1のときは無視される）</param>
-		public LineTool( Color DrawColor, Settings Setting )
+		/// <param name="Setting">設定</param>
+		public void Setup( Color DrawColor, Settings Setting )
 		{
 			m_Thickness = Setting.Thickness;
 			m_RoundEnd = Setting.RoundEnd;
+
+			if( m_Pen != null )m_Pen.Dispose();
 			m_Pen = new Pen( DrawColor, m_Thickness );
+			
 			if( m_Thickness>1 && m_RoundEnd )
 			{
 				m_Pen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
@@ -63,6 +71,9 @@ namespace MyKittenPaint
 
 		/// <inheritdoc/>
 		public ToolType Type => ToolType.Line;
+
+		/// <inheritdoc/>
+		public bool IsBusy(){	return m_DraggingButton != MouseButtons.None;	}
 
 		/// <inheritdoc/>
 		public IEdit CreateEdit()
