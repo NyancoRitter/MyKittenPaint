@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MyKittenPaint
@@ -16,6 +10,19 @@ namespace MyKittenPaint
 	/// </summary>
 	public partial class SizeDlg : Form
 	{
+		//ドロップダウンで選択できるサイズ
+		private static readonly Size[] m_CBSizes = new Size[]
+		{
+			new Size( 16,16 ),
+			new Size( 32,32 ),
+			new Size( 48,48 ),
+			new Size( 64,64 ),
+			new Size( 96,96 ),
+			new Size( 128,128 ),
+			new Size( 256,256 )
+		};
+
+		//ctor
 		public SizeDlg(){	InitializeComponent();	}
 
 		/// <summary>設定可能な最大幅</summary>
@@ -67,12 +74,31 @@ namespace MyKittenPaint
 		//-----------------------------------
 		#region イベントハンドラ
 
+		private void SizeDlg_Load(object sender, EventArgs e)
+		{
+			if( DesignMode )return;
+
+			foreach( var S in m_CBSizes )
+			{	SizeSel_comboBox.Items.Add( $"{S.Width} x {S.Height}" );	}
+		}
+
+		private void SizeSel_comboBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			int iSel = SizeSel_comboBox.SelectedIndex;
+			if( iSel < 0 )return;
+			ImgWidth = m_CBSizes[iSel].Width;
+			ImgHeight = m_CBSizes[iSel].Height;
+		}
+
 		private void OK_button_Click(object sender, EventArgs e)
 		{	DialogResult = DialogResult.OK;	}
 
 		private void Cancel_button_Click(object sender, EventArgs e)
 		{	DialogResult = DialogResult.Cancel;	}
 
+
 		#endregion
+
+		
 	}
 }

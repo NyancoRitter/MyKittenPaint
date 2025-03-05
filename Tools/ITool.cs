@@ -35,6 +35,12 @@ namespace MyKittenPaint
 		/// <summary>描画ツール種類</summary>
 		ToolType Type{	get;	}
 
+		/// <summary>
+		/// ツールによる作業中（：典型的にはマウスボタン押下～解放までの間）か否か．
+		/// 
+		/// 選択範囲の変更やツールの切替，ペースト等々の操作を棄却するか否かを判断するために用いられる．
+		/// </summary>
+		/// <returns>作業中状態であればtrue</returns>
 		bool IsBusy();
 
 		//----------

@@ -37,6 +37,7 @@ namespace MyKittenPaint
 			this.Height_numericUpDown = new System.Windows.Forms.NumericUpDown();
 			this.OK_button = new System.Windows.Forms.Button();
 			this.Cancel_button = new System.Windows.Forms.Button();
+			this.SizeSel_comboBox = new System.Windows.Forms.ComboBox();
 			this.The_tableLayoutPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Width_numericUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.Height_numericUpDown)).BeginInit();
@@ -48,22 +49,24 @@ namespace MyKittenPaint
 			this.The_tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.The_tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.The_tableLayoutPanel.Controls.Add(this.label1, 0, 0);
-			this.The_tableLayoutPanel.Controls.Add(this.label2, 0, 1);
-			this.The_tableLayoutPanel.Controls.Add(this.label3, 1, 1);
-			this.The_tableLayoutPanel.Controls.Add(this.Width_numericUpDown, 0, 2);
-			this.The_tableLayoutPanel.Controls.Add(this.Height_numericUpDown, 1, 2);
-			this.The_tableLayoutPanel.Controls.Add(this.OK_button, 1, 3);
-			this.The_tableLayoutPanel.Controls.Add(this.Cancel_button, 0, 3);
+			this.The_tableLayoutPanel.Controls.Add(this.label2, 0, 2);
+			this.The_tableLayoutPanel.Controls.Add(this.label3, 1, 2);
+			this.The_tableLayoutPanel.Controls.Add(this.Width_numericUpDown, 0, 3);
+			this.The_tableLayoutPanel.Controls.Add(this.Height_numericUpDown, 1, 3);
+			this.The_tableLayoutPanel.Controls.Add(this.OK_button, 1, 4);
+			this.The_tableLayoutPanel.Controls.Add(this.Cancel_button, 0, 4);
+			this.The_tableLayoutPanel.Controls.Add(this.SizeSel_comboBox, 0, 1);
 			this.The_tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.The_tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
 			this.The_tableLayoutPanel.Name = "The_tableLayoutPanel";
 			this.The_tableLayoutPanel.Padding = new System.Windows.Forms.Padding(8);
-			this.The_tableLayoutPanel.RowCount = 4;
+			this.The_tableLayoutPanel.RowCount = 5;
+			this.The_tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.The_tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.The_tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.The_tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.The_tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.The_tableLayoutPanel.Size = new System.Drawing.Size(348, 170);
+			this.The_tableLayoutPanel.Size = new System.Drawing.Size(348, 197);
 			this.The_tableLayoutPanel.TabIndex = 0;
 			// 
 			// label1
@@ -82,7 +85,7 @@ namespace MyKittenPaint
 			// 
 			this.label2.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(70, 35);
+			this.label2.Location = new System.Drawing.Point(70, 73);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(41, 15);
 			this.label2.TabIndex = 1;
@@ -92,7 +95,7 @@ namespace MyKittenPaint
 			// 
 			this.label3.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(233, 35);
+			this.label3.Location = new System.Drawing.Point(233, 73);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(48, 15);
 			this.label3.TabIndex = 2;
@@ -101,7 +104,7 @@ namespace MyKittenPaint
 			// Width_numericUpDown
 			// 
 			this.Width_numericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Top;
-			this.Width_numericUpDown.Location = new System.Drawing.Point(31, 53);
+			this.Width_numericUpDown.Location = new System.Drawing.Point(31, 91);
 			this.Width_numericUpDown.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -125,7 +128,7 @@ namespace MyKittenPaint
 			// Height_numericUpDown
 			// 
 			this.Height_numericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Top;
-			this.Height_numericUpDown.Location = new System.Drawing.Point(197, 53);
+			this.Height_numericUpDown.Location = new System.Drawing.Point(197, 91);
 			this.Height_numericUpDown.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -149,7 +152,7 @@ namespace MyKittenPaint
 			// OK_button
 			// 
 			this.OK_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.OK_button.Location = new System.Drawing.Point(217, 119);
+			this.OK_button.Location = new System.Drawing.Point(217, 146);
 			this.OK_button.Name = "OK_button";
 			this.OK_button.Size = new System.Drawing.Size(120, 40);
 			this.OK_button.TabIndex = 4;
@@ -161,7 +164,7 @@ namespace MyKittenPaint
 			// 
 			this.Cancel_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.Cancel_button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.Cancel_button.Location = new System.Drawing.Point(11, 119);
+			this.Cancel_button.Location = new System.Drawing.Point(11, 146);
 			this.Cancel_button.Name = "Cancel_button";
 			this.Cancel_button.Size = new System.Drawing.Size(120, 40);
 			this.Cancel_button.TabIndex = 5;
@@ -169,13 +172,25 @@ namespace MyKittenPaint
 			this.Cancel_button.UseVisualStyleBackColor = true;
 			this.Cancel_button.Click += new System.EventHandler(this.Cancel_button_Click);
 			// 
+			// SizeSel_comboBox
+			// 
+			this.SizeSel_comboBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
+			this.SizeSel_comboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.SizeSel_comboBox.FormattingEnabled = true;
+			this.SizeSel_comboBox.Location = new System.Drawing.Point(31, 38);
+			this.SizeSel_comboBox.Margin = new System.Windows.Forms.Padding(3, 3, 3, 12);
+			this.SizeSel_comboBox.Name = "SizeSel_comboBox";
+			this.SizeSel_comboBox.Size = new System.Drawing.Size(120, 23);
+			this.SizeSel_comboBox.TabIndex = 6;
+			this.SizeSel_comboBox.SelectedIndexChanged += new System.EventHandler(this.SizeSel_comboBox_SelectedIndexChanged);
+			// 
 			// SizeDlg
 			// 
 			this.AcceptButton = this.OK_button;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.Cancel_button;
-			this.ClientSize = new System.Drawing.Size(348, 170);
+			this.ClientSize = new System.Drawing.Size(348, 197);
 			this.Controls.Add(this.The_tableLayoutPanel);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -183,6 +198,7 @@ namespace MyKittenPaint
 			this.ShowIcon = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "SizeDlg";
+			this.Load += new System.EventHandler(this.SizeDlg_Load);
 			this.The_tableLayoutPanel.ResumeLayout(false);
 			this.The_tableLayoutPanel.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Width_numericUpDown)).EndInit();
@@ -201,5 +217,6 @@ namespace MyKittenPaint
 		private System.Windows.Forms.NumericUpDown Height_numericUpDown;
 		private System.Windows.Forms.Button OK_button;
 		private System.Windows.Forms.Button Cancel_button;
+		private System.Windows.Forms.ComboBox SizeSel_comboBox;
 	}
 }

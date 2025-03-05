@@ -113,9 +113,6 @@ namespace MyKittenPaint
 		public FillRect( Rectangle Rect, Color Col )
 		{	m_Rects = new Rectangle[]{ Rect };	m_Col = Col;	}
 
-		public FillRect( IReadOnlyList<Rectangle> Rects, Color Col )
-		{	m_Rects = Rects.ToArray();	m_Col = Col;	}
-
 		public EditTypes Edit( Content Cont ){	Cont.Draw(this);	return EditTypes.Draw;	}	
 		public void Draw( Bitmap BMP )
 		{
@@ -124,6 +121,35 @@ namespace MyKittenPaint
 			{
 				foreach( var Rect in m_Rects )
 				{	g.FillRectangle( Brush, Rect );	}
+			}
+		}
+	}
+
+	/// <summary>
+	/// 指定の色で指定範囲を塗りつぶす
+	/// </summary>
+	public class FillPath : IEdit, IDraw
+	{
+		private readonly System.Drawing.Drawing2D.GraphicsPath m_Path;
+		private readonly Color m_Col;
+
+		/// <summary>
+		/// ctor
+		/// </summary>
+		/// <param name="Path">範囲．この参照がそのまま保持されるので注意</param>
+		/// <param name="Col">色</param>
+		public FillPath( System.Drawing.Drawing2D.GraphicsPath Path, Color Col )
+		{	m_Path = Path;	m_Col = Col;	}
+
+		public EditTypes Edit( Content Cont ){	Cont.Draw(this);	return EditTypes.Draw;	}	
+		public void Draw( Bitmap BMP )
+		{
+			using( var g = Graphics.FromImage( BMP ) )
+			using( var Brush = new SolidBrush(m_Col) )
+			using( var Pen = new Pen( m_Col ) )
+			{
+				g.FillPath( Brush, m_Path );
+				g.DrawPath( Pen, m_Path );
 			}
 		}
 	}

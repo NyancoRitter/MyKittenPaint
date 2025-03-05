@@ -72,5 +72,12 @@ namespace MyKittenPaint
 		/// <summary>現在のGUI状態から消しゴムツールの描画サイズを返す</summary>
 		/// <returns>正方形の一片の長さ</returns>
 		int GetEraserToolSize();
+
+		/// <summary>
+		/// 現在のGUI状態では
+		/// 範囲選択ツールとして「矩形」側が選択されているか否か．
+		/// </summary>
+		/// <returns>GUI上での選択状態が矩形側ならtrue, 自由形状側ならfalse</returns>
+		bool IsRectModeSelectedForSelectionTool();
 	}
 }

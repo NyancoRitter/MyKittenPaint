@@ -95,7 +95,11 @@ namespace MyKittenPaint
 		{
 			if( m_DraggingButton == MouseButtons.None )
 			{
-				m_Backup = new Bitmap( BMP );	//操作開始時点の画像のコピーを得ておく
+				//操作開始時点の画像のコピーを得ておく
+				Util.DisposeBMP( ref m_Backup );
+				m_Backup = new Bitmap( BMP );
+
+				//
 				m_Points[0] = pos;
 				m_Points[1] = pos;
 				m_DraggingButton = button;
@@ -104,8 +108,7 @@ namespace MyKittenPaint
 			else if( m_DraggingButton != button )
 			{//現在と異なるボタンが押された場合，描画をキャンセル
 				m_DraggingButton = MouseButtons.None;
-				m_Backup.Dispose();
-				m_Backup = null;
+				Util.DisposeBMP( ref m_Backup );
 				return ToolProcResult.EditShouldBeRejected;
 			}
 
@@ -157,8 +160,7 @@ namespace MyKittenPaint
 			if( m_DraggingButton == MouseButtons.None )return ToolProcResult.None;
 			
 			m_DraggingButton = MouseButtons.None;
-			m_Backup.Dispose();
-			m_Backup = null;
+			Util.DisposeBMP( ref m_Backup );
 
 			if( m_Points[0].Equals(m_Points[1]) )return ToolProcResult.EditShouldBeRejected;
 			return ToolProcResult.EditCompleted;

@@ -27,6 +27,54 @@ namespace MyKittenPaint
 		}
 
 		/// <summary>
+		/// Bitmapをクリップボードにコピーする．
+		/// ただし，Format32bppArgb の場合には他APPにペーストできる形にはならない
+		/// </summary>
+		/// <param name="bmp">クリップボードにコピーするBitmap</param>
+		public static void CopyBMP_To_Clipboard( Bitmap bmp )
+		{
+			if( bmp.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb )
+			{
+				//※ClipboardはBtimapの透明度をサポートしないらしいので，
+				//アルファCHがある場合,PNGのデータをクリップボードに入れることで対処するとかいう話． 
+				//この場合，自分は良いけども他のAPPには意味不明だからペーストできないという問題があるが……
+				var DataObj = new System.Windows.Forms.DataObject();
+				using( var PngMemStrm = new System.IO.MemoryStream() )
+				{
+					bmp.Save( PngMemStrm, System.Drawing.Imaging.ImageFormat.Png );
+					DataObj.SetData( "PNG", false, PngMemStrm );	//てきとーに"PNG" というフォーマット名で突っ込む
+					System.Windows.Forms.Clipboard.SetDataObject( DataObj, true );
+				}
+			}
+			else
+			{	System.Windows.Forms.Clipboard.SetImage( bmp );	}
+		}
+
+		/// <summary>
+		/// クリップボードがらBitmapを取り出す．
+		///		実装内容は<see cref="CopyBMP_To_Clipboard"/>と対応．
+		/// </summary>
+		/// <returns>取り出せた画像．失敗時にはnull</returns>
+		public static Bitmap GetBMP_from_Clipboard()
+		{
+			var Data = System.Windows.Forms.Clipboard.GetDataObject();
+
+			//※ここの実装は，CopyBMPToClipboard() と対応している：
+			//自身が "PNG" というフォーマットでコピーしてるならそれを取り出す
+			if( Data.GetDataPresent( "PNG", false ) )
+			{
+				var PngMemStrm = Data.GetData( "PNG" ) as System.IO.MemoryStream;
+				if( PngMemStrm != null )
+				{
+					var Bmp = new Bitmap( PngMemStrm );
+					PngMemStrm.Dispose();
+					return Bmp;
+				}
+			}
+			return Data.GetData(System.Windows.Forms.DataFormats.Bitmap) as Bitmap;
+		}
+
+		/// <summary>
 		/// bmpをDispose()して且つnullにする
 		/// </summary>
 		/// <param name="bmp"></param>
@@ -37,6 +85,28 @@ namespace MyKittenPaint
 				bmp.Dispose();
 				bmp = null;
 			}
+		}
+
+		/// <summary>
+		/// 点群を包括するAABBを返す
+		/// </summary>
+		/// <param name="Points"></param>
+		/// <returns></returns>
+		public static Rectangle BoundingRect( IReadOnlyList<Point> Points )
+		{
+			if( !Points.Any() )return new Rectangle();
+
+			Point TL = Points[0];
+			Point RB = Points[0];
+			for( int i=1; i<Points.Count; ++i )
+			{
+				var P = Points[i];
+				TL.X = Math.Min( TL.X, P.X );
+				TL.Y = Math.Min( TL.Y, P.Y );
+				RB.X = Math.Max( RB.X, P.X );
+				RB.Y = Math.Max( RB.Y, P.Y );
+			}
+			return new Rectangle( TL, new Size( RB.X-TL.X+1, RB.Y-TL.Y+1 ) );
 		}
 
 		/// <summary>

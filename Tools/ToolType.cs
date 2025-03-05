@@ -2,7 +2,7 @@
 namespace MyKittenPaint
 {
 	/// <summary>
-	/// 描画ツール種類
+	///ツール種類
 	/// </summary>
 	public enum ToolType
 	{
@@ -10,8 +10,10 @@ namespace MyKittenPaint
 		Pen,
 		/// <summary>直線</summary>
 		Line,
-		/// <summary>選択</summary>
-		Select,
+		/// <summary>矩形範囲選択</summary>
+		RectAreaSelect,
+		/// <summary>自由範囲選択</summary>
+		FreeFormAreaSelect,
 		/// <summary>消しゴム</summary>
 		Eraser,
 		/// <summary>塗りつぶし</summary>
@@ -19,14 +21,15 @@ namespace MyKittenPaint
 	}
 
 	/// <summary>
-	/// 範囲選択モード
+	/// ToolType用拡張メソッド
 	/// </summary>
-	public enum SelectionModeType
+	public static class ToolTypeExtensions
 	{
-		/// <summary>矩形</summary>
-		Rectangle,
-		/// <summary>自由形状</summary>
-		FreeForm
+		/// <summary>範囲選択系のツールか否か</summary>
+		/// <param name="t"></param>
+		/// <returns></returns>
+		public static bool IsAreaSelectTool( this ToolType t )
+		{	return ( t==ToolType.RectAreaSelect  ||  t==ToolType.FreeFormAreaSelect );	}	
 	}
 
 }

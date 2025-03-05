@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // アセンブリに関する一般情報は以下の属性セットをとおして制御されます。
 // 制御されます。アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更します。
-[assembly: AssemblyTitle( "MyKittenPaint" )]
+[assembly: AssemblyTitle( "Paint.CAT" )]
 [assembly: AssemblyDescription( "" )]
 [assembly: AssemblyConfiguration( "" )]
-[assembly: AssemblyCompany( "" )]
-[assembly: AssemblyProduct( "MyKittenPaint" )]
-[assembly: AssemblyCopyright( "Copyright ©  2025" )]
+[assembly: AssemblyCompany( "NyancoRitter" )]
+[assembly: AssemblyProduct( "Paint.CAT" )]
+[assembly: AssemblyCopyright( "Copyright ©  2025 NyancoRitter" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 

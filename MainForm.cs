@@ -24,18 +24,32 @@ namespace MyKittenPaint
 		public MainForm(){	InitializeComponent();	}
 
 		/// <summary>実用ctor</summary>
-		/// <param name="W">初期画像サイズ</param>
-		/// <param name="H">初期画像サイズ</param>
-		public MainForm( int W, int H )
+		/// <param name="Settings">設定</param>
+		public MainForm( UserSettings Settings )
 			: this()
-		{	m_Presenter = new Presenter( W,H, this );	}
+		{
+			m_Presenter = new Presenter( Settings.ImgWidth, Settings.ImgHeight, this );
+
+			ConfirmAtSave_ToolStripMenuItem.Checked = Settings.ConfirmAtSave;
+			ShowFullPathOnCaption_ToolStripMenuItem.Checked = Settings.ShowFullPath;
+		}
+
+		/// <summary>
+		/// 引数オブジェクトの内容をを現在の設定状態にする
+		/// </summary>
+		/// <param name="Settings">現在の設定状態受取</param>
+		public void ModifySettings( UserSettings Settings )
+		{
+			Settings.ImgWidth = m_Presenter.ImgWidth;
+			Settings.ImgHeight = m_Presenter.ImgHeight;
+			Settings.ConfirmAtSave = ConfirmAtSave_ToolStripMenuItem.Checked;
+			Settings.ShowFullPath = ShowFullPathOnCaption_ToolStripMenuItem.Checked;
+		}
 
 		//-----------------------------------
 		#region private methods
 
-		/// <summary>
-		/// 画像表示域のサイズを現在の状況に合わせて変更
-		/// </summary>
+		/// <summary>画像表示域のサイズを現在の状況に合わせて変更</summary>
 		private void UpdateImgViewSize()
 		{
 			int Rate = m_Presenter.ViewMagnificationRate;
@@ -44,9 +58,7 @@ namespace MyKittenPaint
 			UpdateThumbnail();
 		}
 
-		/// <summary>
-		/// Undo , Redo メニューの状態更新
-		/// </summary>
+		/// <summary>Undo , Redo メニューの状態更新</summary>
 		private void UpdateUndoRedoMenuState()
 		{
 			Undo_ToolStripMenuItem.Enabled = m_Presenter.CanUndo();
@@ -192,13 +204,16 @@ namespace MyKittenPaint
 		}
 
 		/// <inheritdoc/>
-		public void OnToolSelectionChangedTo( ToolType type ){	The_toolsUC.ChangeCurrSelTab_to(type);	}
+		public void OnToolSelectionChangedTo( ToolType type ){	The_toolsUC.ChangeCtrlState_WhenCurrSelToolChanged(type);	}
 
 		/// <inheritdoc/>
 		public LineTool.Settings CraeteLineToolSetting(){	return The_toolsUC.CraeteLineToolSetting();	}
 
 		/// <inheritdoc/>
 		public int GetEraserToolSize(){	return The_toolsUC.EraserToolSize;	}
+
+		/// <inheritdoc/>
+		public bool IsRectModeSelectedForSelectionTool(){	return The_toolsUC.IsRectModeSelectedForSelectionTool();	}
 
 		/// <inheritdoc/>
 		public void OnSelectionStateChanged( bool Selected )
@@ -233,11 +248,11 @@ namespace MyKittenPaint
 			{
 				this.SuspendLayout();
 
-				InfoSpace_toolStripStatusLabel.Text = "";
+				InfoSpace_toolStripStatusLabel.Text = Properties.Resources.SoftVerStr;
 				UpdateCaption();
 
 				{//拡大率ドロップダウン準備
-					var Rates = new int[]{ 1,2,3,4,5,6,7,8,10,12,16 };
+					var Rates = new int[]{ 1,2,3,4,5,6,8,10,12,14,16,20,24 };
 					var Items = new ToolStripItem[ Rates.Length ];
 					for( int i=0; i<Rates.Length; ++i )
 					{
@@ -333,6 +348,7 @@ namespace MyKittenPaint
 				m_Presenter.StartNew( Dlg.ImgWidth, Dlg.ImgHeight );
 			}
 
+			UpdateCaption();
 			InfoSpace_toolStripStatusLabel.Text = "[" + DateTime.Now.ToLongTimeString() + "] Started New";
 		}
 
@@ -498,7 +514,7 @@ namespace MyKittenPaint
 			m_Presenter.GridVisible = ShowGrid_ToolStripMenuItem.Checked;
 		}
 
-		//グリッドサイズ
+		//グリッド設定
 		private void GridSize_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if( !m_Presenter.CanShowModalDlg() )return;
@@ -507,10 +523,12 @@ namespace MyKittenPaint
 			{
 				Dlg.X_Interval = m_Presenter.GridSize.Width;
 				Dlg.Y_Interval = m_Presenter.GridSize.Height;
+				Dlg.Grid_Color = m_Presenter.GridColor;
 
 				if( Dlg.ShowDialog(this) != DialogResult.OK )return;
 
 				m_Presenter.GridSize = new Size( Dlg.X_Interval, Dlg.Y_Interval );
+				m_Presenter.GridColor = Dlg.Grid_Color;
 			}
 		}
 

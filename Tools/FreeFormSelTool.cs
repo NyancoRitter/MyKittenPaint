@@ -9,38 +9,23 @@ using System.Windows.Forms;
 namespace MyKittenPaint
 {
 	/// <summary>
-	/// 矩形範囲選択ツール
+	/// 自由形状範囲選択ツール
 	/// （範囲をマウスドラッグで選択する処理）
 	/// </summary>
-	public class RectSelTool : ITool
+	public class FreeFormSelTool : ITool
 	{
-		public event Action<Rectangle> OnRectAreaSelected;
-		public event Action<Size> ShowDraggingAreaSize;
+		public event Action< Point[] > OnFreeFormAreaSelected;
 
 		private bool m_IsDragging = false;
-		private Point[] m_Pos = new Point[2];
-		
-		/// <summary>
-		/// 選択範囲矩形
-		/// </summary>
-		private Rectangle SelectedRect
-		{
-			get
-			{
-				return new Rectangle(
-					Math.Min( m_Pos[0].X, m_Pos[1].X ),
-					Math.Min( m_Pos[0].Y, m_Pos[1].Y ),
-					Math.Abs( m_Pos[0].X - m_Pos[1].X ) + 1,
-					Math.Abs( m_Pos[0].Y - m_Pos[1].Y ) + 1
-				);
-			}
-		}
+		private List<Point> m_Points = new List<Point>();
+
+		private Bitmap m_Backup;
 
 		//-----------------------------------
 		#region ITool Impl
 
 		/// <inheritdoc/>
-		public ToolType Type => ToolType.RectAreaSelect;
+		public ToolType Type => ToolType.FreeFormAreaSelect;
 
 		/// <inheritdoc/>
 		public bool IsBusy(){	return m_IsDragging;	}
@@ -50,12 +35,7 @@ namespace MyKittenPaint
 		{	return null;	}
 
 		/// <inheritdoc/>
-		public void DrawStateToViewImg(Graphics g, int MagRate)
-		{
-			if( !IsBusy() || m_Pos[0].Equals( m_Pos[1] ) )return;
-
-			Util.DrawRectSelectionState( g, SelectedRect, MagRate );
-		}
+		public void DrawStateToViewImg(Graphics g, int MagRate){	/*NOP*/	}
 
 		/// <inheritdoc/>
 		public ToolProcResult OnMouseDown(Point pos, MouseButtons button, Bitmap BMP)
@@ -64,14 +44,19 @@ namespace MyKittenPaint
 			if( m_IsDragging && !button.HasFlag(MouseButtons.Left) )
 			{
 				m_IsDragging = false;
+				Util.DisposeBMP( ref m_Backup );
 				return ToolProcResult.EditShouldBeRejected;
 			}
 
 			//ドラッグできるのは左ボタンのみとする
 			if( !button.HasFlag( MouseButtons.Left ) )return ToolProcResult.None;
 
-			m_Pos[0] = pos;
-			m_Pos[1] = pos;
+			//操作開始時点の画像のコピーを得ておく
+			Util.DisposeBMP( ref m_Backup );
+			m_Backup = new Bitmap( BMP );
+			//
+			m_Points.Clear();
+			m_Points.Add( pos );
 			m_IsDragging = true;
 			return ToolProcResult.None;
 		}
@@ -85,11 +70,18 @@ namespace MyKittenPaint
 			if( pos.Y<0 )pos.Y=0;
 			if( pos.X >= BMP.Width )pos.X = BMP.Width - 1;
 			if( pos.Y >= BMP.Height )pos.Y = BMP.Height - 1;
-			if( m_Pos[1].Equals(pos) )return ToolProcResult.None;
 
-			m_Pos[1] = pos;
-			if( ShowDraggingAreaSize != null )
-			{	ShowDraggingAreaSize( SelectedRect.Size );	}
+			if( m_Points.Last().Equals( pos ) )
+			{	return ToolProcResult.None;	}
+
+			m_Points.Add( pos );
+			
+			//※暫定：ドラッグで範囲を選択している途中の状況というのはどう表示すべき？？
+			using( var g = Graphics.FromImage(BMP) )
+			{
+				g.DrawImage( m_Backup, new Point(0,0) );
+				g.DrawLines( Pens.Gray, m_Points.ToArray() );
+			}
 
 			return ToolProcResult.ShouldUpdateView;
 		}
@@ -99,15 +91,20 @@ namespace MyKittenPaint
 		{
 			if( !m_IsDragging )return ToolProcResult.None;
 			if( !button.HasFlag( MouseButtons.Left ) )return ToolProcResult.None;
+
 			m_IsDragging = false;
-			//1x1 は不可
-			if( m_Pos[0].Equals( m_Pos[1] ) )return ToolProcResult.EditShouldBeRejected;
+			Util.DisposeBMP( ref m_Backup );
 
-			//
-			if( OnRectAreaSelected != null )
-			{	OnRectAreaSelected( SelectedRect );	}
+			if( m_Points.Count < 2 )
+			{	return ToolProcResult.EditShouldBeRejected;	}
+			else
+			{
+				if( OnFreeFormAreaSelected != null )
+				{ OnFreeFormAreaSelected( m_Points.ToArray() ); }
 
-			return ToolProcResult.EditShouldBeRejected;
+				//
+				return ToolProcResult.EditShouldBeRejected;
+			}
 		}
 
 		#endregion

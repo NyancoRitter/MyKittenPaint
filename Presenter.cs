@@ -8,7 +8,10 @@ using System.Drawing;
 namespace MyKittenPaint
 {
 	/// <summary>
-	/// View と Contnt の間のやりとり
+	/// View と Contnt の間．
+	/// * このAPPのロジックそのもの
+	/// * Content の保持者
+	/// * Viewに対して表示更新を指示
 	/// </summary>
 	public class Presenter
 		: IToolViewOpListener
@@ -21,7 +24,7 @@ namespace MyKittenPaint
 
 		//ステート
 		private readonly NormalState m_NormalState;
-		private readonly NewRectAreaSelectedState m_NewAreaSelectedState;
+		private readonly NewAreaSelectedState m_NewAreaSelectedState;
 		private readonly ImgFloatingState m_ImgFloatingState;
 		private IState m_CurrState;
 
@@ -34,13 +37,14 @@ namespace MyKittenPaint
 		private Color[] m_DrawColor;
 		
 		//編集履歴
-		private const int SNAP_SHOT_STEPS = 10;
+		private const int SNAP_SHOT_STEPS = 10;	//画像全体のスナップショットを履歴とする頻度
 		private List< IEdit > m_EditHistory = new List<IEdit>();
 		private int m_iHistoryPointer = 0;
 
 		//グリッド表示
 		private bool m_GridVisible = false;
 		private Size m_GridSize = new Size(1,1);
+		private Color m_GridColor = Color.Gray;
 
 		//-----------------------------------
 		
@@ -51,7 +55,7 @@ namespace MyKittenPaint
 		public Presenter( int w, int h, IView View )
 		{
 			m_NormalState = new NormalState(this);
-			m_NewAreaSelectedState = new NewRectAreaSelectedState(this);
+			m_NewAreaSelectedState = new NewAreaSelectedState(this);
 			m_ImgFloatingState = new ImgFloatingState(this);
 			ChangeCurrStateTo( m_NormalState );
 
@@ -175,9 +179,9 @@ namespace MyKittenPaint
 		public string LastSaveLoadFilePath{	get;	private set;	}
 
 		/// <summary>
-		/// 反転，回転 の操作に対応した処理の実施
+		/// 反転/回転 の操作に対応した処理の実施
 		/// </summary>
-		/// <param name="ActType"></param>
+		/// <param name="ActType">操作種類</param>
 		public void RotateFlip( RotateFlipType ActType )
 		{
 			if( m_CurrState.IsBusy() )return;
@@ -188,7 +192,7 @@ namespace MyKittenPaint
 		//-----------------------------------
 		#region 表示系 public
 
-		/// <summary>View側がモーダルダイアログを表示してもよい状況か？</summary>
+		/// <summary>View側がモーダルダイアログを表示してもよい状況か？（View側からの状況問合用）</summary>
 		/// <returns>可否．他所にフォーカスが行くと困るような状況ではfalse</returns>
 		public bool CanShowModalDlg(){	return !m_CurrState.IsBusy();	}
 
@@ -198,6 +202,7 @@ namespace MyKittenPaint
 		/// </summary>
 		public void ViewInitialization()
 		{
+			m_IView.OnToolSelectionChangedTo( m_CurrSelToolType );
 			m_IView.OnImgSizeChanged();
 			m_IView.OnViewMagRateChanged();
 			m_IView.OnSelectionStateChanged( false );
@@ -241,6 +246,17 @@ namespace MyKittenPaint
 			}
 		}
 
+		/// <summary>グリッドの描画色</summary>
+		public Color GridColor
+		{
+			get{	return m_GridColor;	}
+			set
+			{
+				if( m_GridColor.Equals( value ) )return;
+				m_GridColor = value;
+				m_IView?.OnImgPainted();
+			}
+		}
 		/// <summary>
 		/// グリッドを表示するか否か．
 		/// ただし，trueの状態でも表示倍率が一定以上の場合にしかグリッドは表示されない．
@@ -260,19 +276,19 @@ namespace MyKittenPaint
 		//-----------------------------------
 		#region マウス操作時 public
 
-		/// <summary>マウスボタン押下時の処理の実施</summary>
+		/// <summary>画像表示領域内でのマウスボタン押下時の処理の実施</summary>
 		/// <param name="ViewPos">表示画像上での座標</param>
 		/// <param name="button">押されたボタン</param>
 		public void OnMouseDown( Point ViewPos, System.Windows.Forms.MouseButtons button )
 		{	m_CurrState.OnMouseDown( CvtToImgPoint( ViewPos ), button );	}
 
-		/// <summary>マウスボタン解放時の処理の実施</summary>
+		/// <summary>画像表示領域内でのマウスボタン解放時の処理の実施</summary>
 		/// <param name="ViewPos">表示画像上での座標</param>
 		/// <param name="button">押されたボタン</param>
 		public void OnMouseUp( Point ViewPos, System.Windows.Forms.MouseButtons button )
 		{	m_CurrState.OnMouseUp( CvtToImgPoint( ViewPos ), button );	}
 
-		/// <summary>マウス移動時の処理の実施</summary>
+		/// <summary>画像表示領域内（マウスキャプチャ中ならば座標は外側になり得るが）でのマウス移動時の処理の実施</summary>
 		/// <param name="ViewPos">表示画像上での座標</param>
 		public void OnMouseMove( Point ViewPos )
 		{
@@ -295,7 +311,7 @@ namespace MyKittenPaint
 		{
 			if( m_CurrState.IsBusy() )return;
 			OnRectAreaSelected( new Rectangle(0,0, m_Content.Width, m_Content.Height ) );
-			OnSelectedToolChanged( ToolType.Select );
+			OnSelectedToolChanged( ToolType.RectAreaSelect );
 		}
 
 		/// <summary>「選択解除」操作に対応する処理</summary>
@@ -316,9 +332,7 @@ namespace MyKittenPaint
 		{
 			if( m_CurrState.IsBusy() )return;
 
-			//
-			var Data = System.Windows.Forms.Clipboard.GetDataObject();
-			var BMP = Data.GetData(System.Windows.Forms.DataFormats.Bitmap) as Bitmap;
+			var BMP = Util.GetBMP_from_Clipboard();
 			if( BMP == null )return;
 
 			m_CurrState.PrePaste();
@@ -329,8 +343,8 @@ namespace MyKittenPaint
 				this.ChangeImgSizeTo( Math.Max(BMP.Width,m_Content.Width), Math.Max(BMP.Height,m_Content.Height) );
 			}
 
-			OnSelectedToolChanged( ToolType.Select );
-			m_ImgFloatingState.Setup( new Point(0,0), BMP, false );
+			OnSelectedToolChanged( m_IView.IsRectModeSelectedForSelectionTool()  ?  ToolType.RectAreaSelect  :  ToolType.FreeFormAreaSelect );
+			m_ImgFloatingState.Setup( new Point(0,0), BMP, null );
 			ChangeCurrStateTo( m_ImgFloatingState );
 
 			m_IView.OnImgPainted();
@@ -346,6 +360,8 @@ namespace MyKittenPaint
 		{
 			if( !CanUndo() )return;
 
+			m_CurrState.PreUndo();
+			DiscardCurrSelection();
 			EditTypes WhatDone = EditTypes.None;
 
 			int iStart = ( (m_iHistoryPointer-1) / SNAP_SHOT_STEPS ) * SNAP_SHOT_STEPS;
@@ -355,7 +371,7 @@ namespace MyKittenPaint
 			--m_iHistoryPointer;
 
 			UpdateView( WhatDone );
-			DiscardCurrSelection();
+			
 		}
 
 		/// <summary>Undoを実施可能か否か</summary>
@@ -371,10 +387,10 @@ namespace MyKittenPaint
 		public void Redo()
 		{
 			if( !CanRedo() )return;
+			DiscardCurrSelection();
 
 			++m_iHistoryPointer;
 			UpdateView( m_EditHistory[m_iHistoryPointer].Edit( m_Content ) );
-			DiscardCurrSelection();
 		}
 
 		/// <summary>Redoを実施可能か否か</summary>
@@ -425,13 +441,6 @@ namespace MyKittenPaint
 		}
 
 		/// <inheritdoc/>
-		public void OnSelectionModeChanged( SelectionModeType SelectedMode )
-		{
-			//TODO : 現在，未実装．
-			//複数のモードが実装された際に必要になる．
-		}
-
-		/// <inheritdoc/>
 		public void OnTransBackModeChanged( bool Trans )
 		{
 			m_ImgFloatingState.IsTransMode = Trans;
@@ -469,10 +478,7 @@ namespace MyKittenPaint
 			{	m_IView.OnImgPainted();	}
 		}
 
-		/// <summary>
-		/// 作業関数．
-		/// 引数オブジェクトでの編集を実施し，表示や編集履歴を更新する
-		/// </summary>
+		/// <summary>引数オブジェクトでの編集を実施し，表示や編集履歴を更新する</summary>
 		/// <param name="Editor">
 		/// 編集処理実施者．
 		/// ※この参照がそのまま編集履歴に保持され得る点に注意
@@ -499,7 +505,10 @@ namespace MyKittenPaint
 		}
 
 		/// <summary>何か編集を新たに行った際の Undo/Redo 用編集履歴更新 </summary>
-		/// <param name="edit">実施した編集処理</param>
+		/// <param name="edit">
+		/// 実施した編集処理
+		/// ※この参照がそのまま編集履歴に保持され得る点に注意
+		/// </param>
 		private void AddToEditHistory( IEdit edit )
 		{
 			++m_iHistoryPointer;
@@ -508,7 +517,7 @@ namespace MyKittenPaint
 			if( m_iHistoryPointer < m_EditHistory.Count )
 			{	m_EditHistory.RemoveRange( m_iHistoryPointer, m_EditHistory.Count - m_iHistoryPointer );	}
 
-			//一定回数ごとに画像全体を履歴とし，Undo時の開始地点とする
+			//一定回数ごとに画像全体を履歴とし，Undo時の再生開始地点とする
 			if( m_iHistoryPointer % SNAP_SHOT_STEPS == 0 )
 			{	m_EditHistory.Add( new ChangeImg( m_Content.CreateCurrImgClone() ) );	}
 			else
@@ -528,10 +537,20 @@ namespace MyKittenPaint
 		/// <param name="SelectedRect"></param>
 		private void OnRectAreaSelected( Rectangle SelectedRect )
 		{
-			m_NewAreaSelectedState.SelectedReg = SelectedRect;
+			m_NewAreaSelectedState.SetupAsRect( SelectedRect );
 			ChangeCurrStateTo( m_NewAreaSelectedState );
 			m_IView.OnSelectionStateChanged(true);
 			m_IView.UpdateSizeInfoView( SelectedRect.Size );
+		}
+
+		/// <summary>新しく自由形状な範囲が選択された際の処理</summary>
+		/// <param name="FreeFromVtxs">選択範囲形状の頂点系列</param>
+		private void OnFreeFormAreaSelected( Point[] FreeFromVtxs )
+		{
+			m_NewAreaSelectedState.SetupAsFreeForm( FreeFromVtxs );
+			ChangeCurrStateTo( m_NewAreaSelectedState );
+			m_IView.OnSelectionStateChanged(true);
+			m_IView.UpdateSizeInfoView( Util.BoundingRect(FreeFromVtxs).Size );
 		}
 
 		/// <summary>内部ステート切替処理</summary>
@@ -547,7 +566,8 @@ namespace MyKittenPaint
 		/// <summary>現在の範囲選択を破棄，ノーマルステートに遷移する</summary>
 		private void DiscardCurrSelection()
 		{
-			m_NewAreaSelectedState.SelectedReg = new Rectangle();
+			m_NewAreaSelectedState.Clear();
+			m_ImgFloatingState.Clear();
 			ChangeCurrStateTo( m_NormalState );
 			m_IView?.OnSelectionStateChanged( false );
 		}
@@ -557,28 +577,29 @@ namespace MyKittenPaint
 		/// ただし，グリッド表示しない設定状態である場合や，
 		/// 拡大率が一定よりも小さい場合には描画しない．
 		/// </summary>
-		/// <param name="g"></param>
+		/// <param name="g">描画対象</param>
 		private void DrawGrid( Graphics g )
 		{
 			if( !GridVisible || m_ViewMagRate < 4 )return;
 
-			int mh = m_Content.Height * m_ViewMagRate;
-			for( int x=m_GridSize.Width; x<m_Content.Width; x+=m_GridSize.Width )
+			using( var Pen = new Pen( GridColor ) )
 			{
-				int mx = x * m_ViewMagRate;
-				g.DrawLine( Pens.Gray, mx,0, mx,mh );
-			}
-			int mw = m_Content.Width * m_ViewMagRate;
-			for( int y=m_GridSize.Height; y<m_Content.Height; y+=m_GridSize.Height )
-			{
-				int my = y * m_ViewMagRate;
-				g.DrawLine( Pens.Gray, 0,my, mw,my );
+				int mh = m_Content.Height * m_ViewMagRate;
+				for( int x=m_GridSize.Width; x<m_Content.Width; x+=m_GridSize.Width )
+				{
+					int mx = x * m_ViewMagRate;
+					g.DrawLine( Pen, mx,0, mx,mh );
+				}
+				int mw = m_Content.Width * m_ViewMagRate;
+				for( int y=m_GridSize.Height; y<m_Content.Height; y+=m_GridSize.Height )
+				{
+					int my = y * m_ViewMagRate;
+					g.DrawLine( Pen, 0,my, mw,my );
+				}
 			}
 		}
 
-		/// <summary>
-		/// ファイルパス名（の拡張子部分）から，ファイルフォーマットを決める
-		/// </summary>
+		/// <summary>ファイルパス名（の拡張子部分）から，ファイルフォーマットを決める</summary>
 		/// <param name="FilePath">ファイルパス名</param>
 		/// <returns>不明な場合はnull</returns>
 		private static System.Drawing.Imaging.ImageFormat FileFormatFromPathName( string FilePath )
@@ -648,6 +669,8 @@ namespace MyKittenPaint
 
 			/// <summary>「ペースト」が成される直前の処理</summary>
 			void PrePaste();
+			/// <summary>「Undo」が成される直前の処理</summary>
+			void PreUndo();
 
 			/// <summary>「反転/回転」操作が成された際の処理</summary>
 			/// <param name="ActType">操作により選択された処理</param>
@@ -657,7 +680,9 @@ namespace MyKittenPaint
 		//=============================================
 
 		/// <summary>
-		/// ノーマルステート：範囲選択が成されていない状態
+		/// ノーマルステート：
+		/// * 範囲選択が成されていない状態
+		/// * 各種ツールでの編集作業を実施するステート
 		/// </summary>
 		private class NormalState : IState
 		{
@@ -671,6 +696,7 @@ namespace MyKittenPaint
 			private LineTool m_LineTool = new LineTool();
 			private EraserTool m_EraserTool = new EraserTool();
 			private RectSelTool m_RectSelTool = new RectSelTool();
+			private FreeFormSelTool m_FreeFormSelTool = new FreeFormSelTool();
 			private FillTool m_FillTool = new FillTool();
 
 			/// <summary>ctor</summary>
@@ -683,6 +709,8 @@ namespace MyKittenPaint
 
 				m_RectSelTool.ShowDraggingAreaSize += (Size size)=>{	Owner.m_IView.UpdateSizeInfoView(size);	};
 				m_RectSelTool.OnRectAreaSelected += Owner.OnRectAreaSelected;
+
+				m_FreeFormSelTool.OnFreeFormAreaSelected += Owner.OnFreeFormAreaSelected;
 			}
 
 			/// <summary>
@@ -763,7 +791,8 @@ namespace MyKittenPaint
 				case ToolType.Line:	m_CurrTool = m_LineTool;	break;
 				case ToolType.Eraser:	m_CurrTool = m_EraserTool;	break;
 				case ToolType.Fill:	m_CurrTool = m_FillTool;	break;
-				case ToolType.Select:	m_CurrTool = m_RectSelTool;	break;
+				case ToolType.RectAreaSelect:	m_CurrTool = m_RectSelTool;	break;
+				case ToolType.FreeFormAreaSelect:	m_CurrTool = m_FreeFormSelTool;	break;
 				}
 
 				m_Owner.m_IView?.OnImgPainted();
@@ -771,6 +800,7 @@ namespace MyKittenPaint
 
 			public void Copy( bool IsCut ){	/*NOP*/	}
 			public void PrePaste(){	/*NOP*/	}
+			public void PreUndo(){	/*NOP*/	}
 
 			public void RotateFlip( RotateFlipType ActType )
 			{
@@ -793,15 +823,13 @@ namespace MyKittenPaint
 			/// <param name="CurrSelTool">現在GUIで選択されているツール種類</param>
 			/// <param name="button">押されたボタン</param>
 			/// <param name="Owner">Presenter</param>
-			/// <returns>
-			/// 成否．使用すべきツールが無い場合には false．
-			/// </returns>
+			/// <returns>成否．使用すべきツールが無い場合には false．</returns>
 			private bool SetupTool( ToolType CurrSelTool, System.Windows.Forms.MouseButtons button, Presenter Owner )
 			{
 				int iDrawColor = Util.DrawColorIndexFor( button );
 				if( iDrawColor<0 )return false;
 
-				//Ctrlキー押下時にスポイトツールとして働く場合
+				//ツールによってはCtrlキー押下している際にはスポイトツールになる
 				if( 
 					System.Windows.Forms.Control.ModifierKeys.HasFlag( System.Windows.Forms.Keys.Control ) &&
 					ShouldActAsColorPicker_when_Ctrl( CurrSelTool )
@@ -821,8 +849,11 @@ namespace MyKittenPaint
 					m_LineTool.Setup( Owner.m_DrawColor[iDrawColor], Owner.m_IView.CraeteLineToolSetting() );
 					m_CurrTool = m_LineTool;
 					return true;
-				case ToolType.Select:
+				case ToolType.RectAreaSelect:
 					m_CurrTool = m_RectSelTool;
+					return true;
+				case ToolType.FreeFormAreaSelect:
+					m_CurrTool = m_FreeFormSelTool;
 					return true;
 				case ToolType.Eraser:
 					m_EraserTool.Setup( Owner.m_DrawColor[0], Owner.m_DrawColor[1], Owner.m_IView.GetEraserToolSize() );
@@ -839,7 +870,7 @@ namespace MyKittenPaint
 
 			/// <summary>Ctrlキー押下状態では選択中ツールではなくスポイトとして機能するべきか否か</summary>
 			/// <param name="type">選択中のツール</param>
-			/// <returns></returns>
+			/// <returns>スポイト機能となるべきか否か</returns>
 			private static bool ShouldActAsColorPicker_when_Ctrl( ToolType type )
 			{
 				return (type==ToolType.Pen || type==ToolType.Line || type==ToolType.Eraser || type==ToolType.Fill );
@@ -856,23 +887,18 @@ namespace MyKittenPaint
 					break;
 				case ToolProcResult.EditCompleted:
 					{
+						//編集バッファの内容が現在の画像データと同一なら編集自体を無かったことにする
 						if( m_Owner.m_Content.IsSame( m_EditImg ) )
-						{
-							m_Owner.m_IView.OnImgPainted();
-						}
+						{	m_Owner.m_IView.OnImgPainted();	}
 						else
-						{
-							var Editor = m_CurrTool.CreateEdit();
-							m_Owner.EditWith( Editor );
-						}
+						{	m_Owner.EditWith( m_CurrTool.CreateEdit() );	}
 					}
 					break;
 				case ToolProcResult.EditShouldBeRejected:
-					//m_UsingTool = null;
 					m_Owner.m_IView.OnImgPainted();
 					break;
 				default:
-					return;
+					break;
 				}
 			}
 
@@ -882,35 +908,86 @@ namespace MyKittenPaint
 		//=============================================
 
 		/// <summary>
-		/// 範囲選択が成された際のステート
+		/// 範囲選択が成された際のステート：
+		/// * 範囲選択系ツール（あるいは全選択操作）で選択範囲が決定した直後のステート
 		/// </summary>
-		private class NewRectAreaSelectedState : IState
+		private class NewAreaSelectedState : IState
 		{
 			private Presenter m_Owner;
 
-			public NewRectAreaSelectedState( Presenter Owner ){	m_Owner = Owner;	}
+			//範囲
+			private Rectangle m_AABB;	//自由形状時にはその形状のAABB，矩形範囲時はその範囲そのものとする
+			private Point[] m_FreeFormVtxs;	//自由形状時にはその形状の頂点群．そうでない場合にはnullとする
 
-			/// <summary>選択範囲</summary>
-			public Rectangle SelectedReg{	get;	set;	}
+			//ctor
+			public NewAreaSelectedState( Presenter Owner ){	m_Owner = Owner;	}
+
+			/// <summary>
+			/// 選択範囲のセットアップ（矩形範囲選択時）
+			/// </summary>
+			/// <param name="SelectedArea">選択範囲</param>
+			public void SetupAsRect( Rectangle SelectedArea )
+			{
+				m_FreeFormVtxs = null;
+				m_AABB = SelectedArea;
+			}
+
+			/// <summary>
+			/// 選択範囲のセットアップ（自由形状時）
+			/// </summary>
+			/// <param name="FreeFormVtxs">形状の頂点系列</param>
+			public void SetupAsFreeForm( IReadOnlyList<Point> FreeFormVtxs )
+			{
+				m_FreeFormVtxs = FreeFormVtxs.ToArray();
+				m_AABB = Util.BoundingRect( m_FreeFormVtxs );
+			}
+
+			/// <summary>
+			/// 未セットアップ状態にする
+			/// </summary>
+			public void Clear()
+			{
+				m_FreeFormVtxs = null;
+				m_AABB = new Rectangle();
+			}
 
 			//--------------
 			#region IState Impl
 
 			public void PreLeave(){	m_Owner.m_IView?.ChangeImgViewCursorTo( System.Windows.Forms.Cursors.Default );	}
-			public void OnEnter(){}
+			public void OnEnter(){	/*NOP*/	}
 
 			//
 			public void OnMouseDown( Point ImgPos, System.Windows.Forms.MouseButtons button )
 			{
 				if( !button.HasFlag( System.Windows.Forms.MouseButtons.Left ) )return;
 
-				if( SelectedReg.Contains( ImgPos ) )
-				{//範囲内ならドラッグ開始
-					m_Owner.m_ImgFloatingState.Setup(
-						new Point( SelectedReg.X, SelectedReg.Y ),
-						m_Owner.m_Content.CreatePartialImg( SelectedReg ),
-						!System.Windows.Forms.Control.ModifierKeys.HasFlag( System.Windows.Forms.Keys.Control )
-					);
+				if( m_AABB.Contains( ImgPos ) )
+				{//AABB範囲内ならドラッグ開始
+					bool IsCopyMode = System.Windows.Forms.Control.ModifierKeys.HasFlag( System.Windows.Forms.Keys.Control );
+
+					if( IsFreeFormMode )
+					{
+						m_Owner.m_ImgFloatingState.Setup(
+							new Point( m_AABB.X, m_AABB.Y ),
+							m_Owner.m_Content.CreatePartialImg( FreeFormPath ),
+							( IsCopyMode  ?  null  :  FreeFormPath ) 
+						);
+					}
+					else
+					{
+						if( IsCopyMode )
+						{
+							m_Owner.m_ImgFloatingState.Setup( new Point( m_AABB.X, m_AABB.Y ), m_Owner.m_Content.CreatePartialImg( m_AABB ), null );
+						}
+						else
+						{
+							var RegPath = new System.Drawing.Drawing2D.GraphicsPath();
+							RegPath.AddRectangle( m_AABB );
+							m_Owner.m_ImgFloatingState.Setup( new Point( m_AABB.X, m_AABB.Y ), m_Owner.m_Content.CreatePartialImg( m_AABB ), RegPath );
+						}
+					}
+					
 					m_Owner.ChangeCurrStateTo( m_Owner.m_ImgFloatingState );
 				}
 				else
@@ -926,52 +1003,61 @@ namespace MyKittenPaint
 
 			//
 			public void OnMouseMove( Point ImgPos )
-			{
+			{	//カーソルの変更
 				m_Owner.m_IView?.ChangeImgViewCursorTo(
-					SelectedReg.Contains( ImgPos ) ? System.Windows.Forms.Cursors.SizeAll : System.Windows.Forms.Cursors.Default
+					m_AABB.Contains( ImgPos ) ? System.Windows.Forms.Cursors.SizeAll : System.Windows.Forms.Cursors.Default
 				);
 			}
 
-			//
+			//画像表示領域よりも外側をクリックする操作→範囲選択状態を破棄
 			public void OnOutsidePosClicked( System.Windows.Forms.MouseButtons button )
 			{	m_Owner.DiscardCurrSelection();	}
 
 			//
 			public void DrawCurrentView( Graphics g )
-			{
+			{//AABBを描画
 				int MagRate = m_Owner.ViewMagnificationRate;
 				m_Owner.m_Content.DrawMagnifiedImgTo( g, MagRate );
 				m_Owner.DrawGrid( g );
-				Util.DrawRectSelectionState( g, SelectedReg, MagRate, true );
+				Util.DrawRectSelectionState( g, m_AABB, MagRate, true );
 			}
 
-			public void DrawThumbnail( Graphics g )
-			{	m_Owner.m_Content.DrawMagnifiedImgTo( g, 1 );	}
-
+			public void DrawThumbnail( Graphics g ){	m_Owner.m_Content.DrawMagnifiedImgTo( g, 1 );	}
 			public bool IsBusy(){	return false;	}
 
 			public bool ClearSelection()
-			{
-				if( !SelectedReg.IsEmpty )
-				{//選択範囲を背景色で塗りつぶす
-					m_Owner.EditWith( new FillRect( SelectedReg, m_Owner.m_DrawColor[1] ) );
-				}
+			{//DELキー操作→画像の選択範囲を削除（＝背景色で塗りつぶす）
+				if( IsFreeFormMode )
+				{	m_Owner.EditWith( new FillPath( FreeFormPath, m_Owner.m_DrawColor[1] ) );	}
+				else if( !m_AABB.IsEmpty )
+				{	m_Owner.EditWith( new FillRect( m_AABB, m_Owner.m_DrawColor[1] ) );	}
+
 				return true;
 			}
 
-			//ツールが Select 以外に変更されたら現在の範囲選択状態は破棄
+			//このステートに入った際のツールとは別のツールが選択されたらその時点で現在の範囲選択状態は破棄
 			public void OnToolSelected( ToolType SelectedTool )
 			{
-				if( SelectedTool != ToolType.Select )
-				{	m_Owner.DiscardCurrSelection();	}
+				if( IsFreeFormMode  &&  SelectedTool==ToolType.FreeFormAreaSelect )return;
+				else if( SelectedTool==ToolType.RectAreaSelect )return;
+
+				m_Owner.DiscardCurrSelection();
 			}
 
 			public void Copy( bool IsCut )
 			{
-				if( IsBusy() || SelectedReg.IsEmpty )return;
+				if( IsBusy() || m_AABB.IsEmpty )return;
 
-				using( var Img = m_Owner.m_Content.CreatePartialImg( SelectedReg ) )
-				{	System.Windows.Forms.Clipboard.SetImage( Img );	}
+				if( IsFreeFormMode )
+				{
+					using( var Img = m_Owner.m_Content.CreatePartialImg( FreeFormPath ) )
+					{	Util.CopyBMP_To_Clipboard( Img );	}
+				}
+				else
+				{
+					using( var Img = m_Owner.m_Content.CreatePartialImg( m_AABB ) )
+					{	Util.CopyBMP_To_Clipboard( Img );	}
+				}
 
 				if( IsCut )
 				{
@@ -981,24 +1067,63 @@ namespace MyKittenPaint
 			}
 
 			public void PrePaste(){	/*NOP*/	}
+			public void PreUndo(){	/*NOP*/	}
 
 			public void RotateFlip( RotateFlipType ActType )
 			{
-				if( SelectedReg.IsEmpty )return;
+				if( m_AABB.IsEmpty )return;
 
-				//選択範囲を引数に応じて変形させた画像が浮いている状態に遷移する
-				var FloatingImg = m_Owner.m_Content.CreatePartialImg( SelectedReg );
-				FloatingImg.RotateFlip( ActType );
+				if( IsFreeFormMode )
+				{
+					//選択範囲を引数に応じて変形させた画像が浮いている状態に遷移する
+					var FloatingImg = m_Owner.m_Content.CreatePartialImg( FreeFormPath );
+					FloatingImg.RotateFlip( ActType );
 
-				m_Owner.m_ImgFloatingState.Setup(
-						new Point( SelectedReg.X, SelectedReg.Y ), //※回転時の座標はどうする？
-						FloatingImg,
-						false
-					);
-				m_Owner.ChangeCurrStateTo( m_Owner.m_ImgFloatingState );
+					m_Owner.m_ImgFloatingState.Setup(
+							new Point( m_AABB.X, m_AABB.Y ), //※回転時の座標はどうする？
+							FloatingImg,
+							null
+						);
+					m_Owner.ChangeCurrStateTo( m_Owner.m_ImgFloatingState );
 
-				//変形前の領域を背景色で塗りつぶす
-				m_Owner.EditWith( new FillRect( SelectedReg, m_Owner.m_DrawColor[1] ) );
+					//変形前の選択範囲領域を背景色で塗りつぶす
+					m_Owner.EditWith( new FillPath( FreeFormPath, m_Owner.m_DrawColor[1] ) );
+				}
+				else
+				{
+					//選択範囲を引数に応じて変形させた画像が浮いている状態に遷移する
+					var FloatingImg = m_Owner.m_Content.CreatePartialImg( m_AABB );
+					FloatingImg.RotateFlip( ActType );
+
+					m_Owner.m_ImgFloatingState.Setup(
+							new Point( m_AABB.X, m_AABB.Y ), //※回転時の座標はどうする？
+							FloatingImg,
+							null
+						);
+					m_Owner.ChangeCurrStateTo( m_Owner.m_ImgFloatingState );
+
+					//変形前の選択範囲領域を背景色で塗りつぶす
+					m_Owner.EditWith( new FillRect( m_AABB, m_Owner.m_DrawColor[1] ) );
+				}
+			}
+
+			#endregion
+			//--------------
+			#region private
+
+			//自由形状を扱っている状態化否か．falseなら矩形．
+			private bool IsFreeFormMode => (m_FreeFormVtxs!=null);
+
+			//m_FreeFormVtxs の形状に相当する GraphicsPath を生成して返す
+			private System.Drawing.Drawing2D.GraphicsPath FreeFormPath
+			{
+				get
+				{
+					if( m_FreeFormVtxs==null )return null;
+					var Path = new System.Drawing.Drawing2D.GraphicsPath();
+					Path.AddPolygon( m_FreeFormVtxs );
+					return Path;
+				}
 			}
 
 			#endregion
@@ -1021,7 +1146,7 @@ namespace MyKittenPaint
 			private Bitmap m_FloatingImg;
 
 			//初期範囲を背景色で塗りつぶす処理．塗りつぶしが不要な場合には bull．
-			private FillRect m_FillInitialRect = null;
+			private FillPath m_FillInitialArea = null;
 
 			//ドラッグ操作用
 			private bool m_IsDragging = false;
@@ -1033,7 +1158,7 @@ namespace MyKittenPaint
 			private Color m_TransCol = Color.White;
 			private Bitmap m_TransModeImg;
 
-			//
+			//ctor
 			public ImgFloatingState( Presenter Owner ){	m_Owner = Owner;	}
 
 			/// <summary>
@@ -1041,12 +1166,14 @@ namespace MyKittenPaint
 			/// </summary>
 			/// <param name="FloatingTopLeft">浮いている絵の初期位置</param>
 			/// <param name="FloatingImg">浮いている絵(この参照がそのまま保持される)</param>
-			/// <param name="ShouldEraseInitialReg">
-			/// 指定した位置と画像のサイズが示す範囲を背景色で塗りつぶすべきか否か．
-			/// 選択範囲をドラッグすることでこのステートに入る場合にはture,
-			/// Paste操作等でこのステートに入る場合にはfalseとする．
+			/// <param name="EraseReg">
+			/// 背景色で塗りつぶすべき範囲．塗りつぶし不要であればnull．
+			/// 想定用途：
+			/// * 選択範囲をドラッグすることでこのステートに入る場合に指定する,
+			///   （ドラッグによって画像内容が「移動」されたときに，元の場所の画像内容を消去するための情報）
+			/// * Paste操作等でこのステートに入る場合にはnullとする．
 			/// </param>
-			public void Setup( Point FloatingTopLeft, Bitmap FloatingImg, bool ShouldEraseInitialReg )
+			public void Setup( Point FloatingTopLeft, Bitmap FloatingImg, System.Drawing.Drawing2D.GraphicsPath EraseReg )
 			{
 				m_TopLeft = FloatingTopLeft;
 				m_FloatingImg = FloatingImg;
@@ -1054,14 +1181,25 @@ namespace MyKittenPaint
 				if( IsTransMode )RecreateTransModeImg();
 
 				Util.DisposeBMP( ref m_EditImg );
-				if( ShouldEraseInitialReg )
+				if( EraseReg != null )
 				{
 					m_EditImg = m_Owner.m_Content.CreateCurrImgClone();
-					m_FillInitialRect = new FillRect( CurrRect, m_Owner.m_DrawColor[1] );
-					m_FillInitialRect.Draw( m_EditImg );
+
+					var FR = new FillPath( EraseReg, m_Owner.m_DrawColor[1] );
+					FR.Draw( m_EditImg );
+					m_FillInitialArea = FR;
 				}
 				else
-				{	m_FillInitialRect = null;	}
+				{	m_FillInitialArea = null;	}
+			}
+
+			/// <summary>未セットアップ状態にする</summary>
+			public void Clear()
+			{
+				Util.DisposeBMP( ref m_EditImg );
+				Util.DisposeBMP( ref m_FloatingImg );
+				Util.DisposeBMP( ref m_TransModeImg );
+				m_FillInitialArea = null;
 			}
 
 			/// <summary>指定色の部分を透過するか否か</summary>
@@ -1095,9 +1233,7 @@ namespace MyKittenPaint
 
 			public void PreLeave()
 			{
-				Util.DisposeBMP( ref m_EditImg );
-				Util.DisposeBMP( ref m_FloatingImg );
-				Util.DisposeBMP( ref m_TransModeImg );
+				Clear();
 				m_Owner.m_IView?.ChangeImgViewCursorTo( System.Windows.Forms.Cursors.Default );
 			}
 
@@ -1121,7 +1257,7 @@ namespace MyKittenPaint
 
 						AcceptEdit();
 
-						this.Setup(	m_TopLeft, FloatingImg, false );
+						this.Setup(	m_TopLeft, FloatingImg, null );
 						m_Owner.ChangeCurrStateTo( this );
 						m_IsDragging = true;
 					}
@@ -1154,14 +1290,14 @@ namespace MyKittenPaint
 					m_Owner.m_IView.OnImgPainted();
 				}
 				else
-				{
+				{//カーソル変更
 					m_Owner.m_IView?.ChangeImgViewCursorTo(
 						CurrRect.Contains( ImgPos ) ? System.Windows.Forms.Cursors.SizeAll : System.Windows.Forms.Cursors.Default
 					);
 				}
 			}
 
-			//
+			//画像表示領域の外側をクリックする操作→現在の位置に確定
 			public void OnOutsidePosClicked( System.Windows.Forms.MouseButtons button ){	AcceptEdit();	}
 
 			//
@@ -1191,23 +1327,20 @@ namespace MyKittenPaint
 			public bool IsBusy(){	return m_IsDragging;	}
 			
 			public bool ClearSelection()
-			{
-				if( m_FillInitialRect != null )
-				{	m_Owner.EditWith( m_FillInitialRect );	}
+			{//DELキー操作→浮いている絵は棄却するが，「移動」元の範囲は消去する
+				if( m_FillInitialArea != null )
+				{	m_Owner.EditWith( m_FillInitialArea );	}
 	
 				return true;
 			}
 
-			public void OnToolSelected( ToolType SelectedTool )
-			{
-				if( SelectedTool != ToolType.Select )
-				{	AcceptEdit();	}
-			}
+			//何かツール選択操作が成された場合は，この場所に確定
+			public void OnToolSelected( ToolType SelectedTool ){	AcceptEdit();	}
 
 			public void Copy( bool IsCut )
 			{
 				if( IsBusy() || m_FloatingImg==null )return;
-				System.Windows.Forms.Clipboard.SetImage( m_FloatingImg );
+				Util.CopyBMP_To_Clipboard( m_FloatingImg );
 
 				if( IsCut )
 				{
@@ -1216,7 +1349,8 @@ namespace MyKittenPaint
 				}
 			}
 
-			public void PrePaste(){	AcceptEdit();	}
+			public void PrePaste(){	AcceptEdit();	}	//ペースト操作が成された場合，まずは現在の場所に確定
+			public void PreUndo(){	AcceptEdit();	}	//Undo操作が成される直前に確定
 
 			public void RotateFlip( RotateFlipType ActType )
 			{
@@ -1231,15 +1365,18 @@ namespace MyKittenPaint
 			/// <summary>現在の浮いている画像の範囲</summary>
 			private Rectangle CurrRect => new Rectangle( m_TopLeft, m_FloatingImg.Size );
 
+			/// <summary>
+			/// 現在の位置に確定：浮いている絵を画像データに書込む
+			/// </summary>
 			private void AcceptEdit()
 			{
 				m_IsDragging = false;
 
 				var ImgPainter = new DrawImg( new Bitmap( IsTransMode ? m_TransModeImg : m_FloatingImg ), m_TopLeft );
-				if( m_FillInitialRect != null )
-				{
+				if( m_FillInitialArea != null )
+				{//移動元の消去とまとめて１回の編集操作（：Undo/Redoの単位）とする
 					var Edits = new EditSeq();
-					Edits.Add( m_FillInitialRect ).Add( ImgPainter );
+					Edits.Add( m_FillInitialArea ).Add( ImgPainter );
 					m_Owner.EditWith( Edits );
 				}
 				else
@@ -1248,6 +1385,7 @@ namespace MyKittenPaint
 				m_Owner.DiscardCurrSelection();
 			}
 
+			/// <summary>特定色範囲を透過する用画像データの再生成</summary>
 			private void RecreateTransModeImg()
 			{
 				Util.DisposeBMP( ref m_TransModeImg );

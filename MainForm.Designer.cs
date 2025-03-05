@@ -70,14 +70,14 @@ namespace MyKittenPaint
 			this.Size_SToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.View_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ShowThumbnail_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.ShowGrid_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.GridSize_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Settings_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ConfirmAtSave_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ShowFullPathOnCaption_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Help_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Version_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-			this.GridSize_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Main_toolStripContainer.BottomToolStripPanel.SuspendLayout();
 			this.Main_toolStripContainer.ContentPanel.SuspendLayout();
 			this.Main_toolStripContainer.TopToolStripPanel.SuspendLayout();
@@ -490,19 +490,19 @@ namespace MyKittenPaint
 			// FlipRotate_ToolStripMenuItem
 			// 
 			this.FlipRotate_ToolStripMenuItem.Name = "FlipRotate_ToolStripMenuItem";
-			this.FlipRotate_ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+			this.FlipRotate_ToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
 			this.FlipRotate_ToolStripMenuItem.Text = "Flip/Rotate(&F)...";
 			this.FlipRotate_ToolStripMenuItem.Click += new System.EventHandler(this.FlipRotate_ToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(221, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(197, 6);
 			// 
 			// Size_SToolStripMenuItem
 			// 
 			this.Size_SToolStripMenuItem.Name = "Size_SToolStripMenuItem";
-			this.Size_SToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+			this.Size_SToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
 			this.Size_SToolStripMenuItem.Text = "Change Size(&S)...";
 			this.Size_SToolStripMenuItem.Click += new System.EventHandler(this.Size_SToolStripMenuItem_Click);
 			// 
@@ -520,17 +520,30 @@ namespace MyKittenPaint
 			// ShowThumbnail_ToolStripMenuItem
 			// 
 			this.ShowThumbnail_ToolStripMenuItem.Name = "ShowThumbnail_ToolStripMenuItem";
-			this.ShowThumbnail_ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+			this.ShowThumbnail_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
+			this.ShowThumbnail_ToolStripMenuItem.Size = new System.Drawing.Size(270, 26);
 			this.ShowThumbnail_ToolStripMenuItem.Text = "Show Thumbnail(&T)";
 			this.ShowThumbnail_ToolStripMenuItem.Click += new System.EventHandler(this.ShowThumbnail_ToolStripMenuItem_Click);
+			// 
+			// toolStripSeparator5
+			// 
+			this.toolStripSeparator5.Name = "toolStripSeparator5";
+			this.toolStripSeparator5.Size = new System.Drawing.Size(267, 6);
 			// 
 			// ShowGrid_ToolStripMenuItem
 			// 
 			this.ShowGrid_ToolStripMenuItem.Name = "ShowGrid_ToolStripMenuItem";
 			this.ShowGrid_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
-			this.ShowGrid_ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-			this.ShowGrid_ToolStripMenuItem.Text = "Show Grid";
+			this.ShowGrid_ToolStripMenuItem.Size = new System.Drawing.Size(270, 26);
+			this.ShowGrid_ToolStripMenuItem.Text = "Show Grid(&G)";
 			this.ShowGrid_ToolStripMenuItem.Click += new System.EventHandler(this.ShowGrid_ToolStripMenuItem_Click);
+			// 
+			// GridSize_ToolStripMenuItem
+			// 
+			this.GridSize_ToolStripMenuItem.Name = "GridSize_ToolStripMenuItem";
+			this.GridSize_ToolStripMenuItem.Size = new System.Drawing.Size(270, 26);
+			this.GridSize_ToolStripMenuItem.Text = "Grid Settings(&S)...";
+			this.GridSize_ToolStripMenuItem.Click += new System.EventHandler(this.GridSize_ToolStripMenuItem_Click);
 			// 
 			// Settings_ToolStripMenuItem
 			// 
@@ -569,18 +582,6 @@ namespace MyKittenPaint
 			this.Version_ToolStripMenuItem.Size = new System.Drawing.Size(168, 26);
 			this.Version_ToolStripMenuItem.Text = "Version(&V)...";
 			this.Version_ToolStripMenuItem.Click += new System.EventHandler(this.Version_ToolStripMenuItem_Click);
-			// 
-			// toolStripSeparator5
-			// 
-			this.toolStripSeparator5.Name = "toolStripSeparator5";
-			this.toolStripSeparator5.Size = new System.Drawing.Size(221, 6);
-			// 
-			// GridSize_ToolStripMenuItem
-			// 
-			this.GridSize_ToolStripMenuItem.Name = "GridSize_ToolStripMenuItem";
-			this.GridSize_ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-			this.GridSize_ToolStripMenuItem.Text = "Grid Size(&S)...";
-			this.GridSize_ToolStripMenuItem.Click += new System.EventHandler(this.GridSize_ToolStripMenuItem_Click);
 			// 
 			// MainForm
 			// 

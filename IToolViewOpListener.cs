@@ -25,12 +25,6 @@ namespace MyKittenPaint
 		void OnEraserSizeChanged( int Size );
 
 		/// <summary>
-		/// 範囲選択ツールのモードが変更されたとき
-		/// </summary>
-		/// <param name="SelectedMode">選択されたモード</param>
-		void OnSelectionModeChanged( SelectionModeType SelectedMode );
-
-		/// <summary>
 		/// 背景色部分を透過するか否かが変更されたとき
 		/// </summary>
 		/// <param name="Trans">透過するか否か</param>

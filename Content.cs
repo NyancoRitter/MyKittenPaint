@@ -102,11 +102,52 @@ namespace MyKittenPaint
 		public Bitmap CreateCurrImgClone(){	return (Bitmap)m_BMP.Clone();	}
 
 		/// <summary>
-		/// 現在の画像の部分画像を生成して返す
+		/// 現在の画像の部分画像を生成して返す．
+		/// フォーマットは Format24bppRgb
 		/// </summary>
 		/// <param name="Rect">範囲</param>
 		/// <returns>部分画像</returns>
 		public Bitmap CreatePartialImg( Rectangle Rect ){	return m_BMP.Clone( Rect, m_BMP.PixelFormat );	}
+
+		/// <summary>
+		/// 現在の画像の部分画像を生成して返す．
+		/// 画像サイズは引数を包括する矩形のサイズとなる．
+		/// フォーマットは Format32bppArgb となり，引数により指定された範囲の外側は透明となる．
+		/// </summary>
+		/// <param name="Path">範囲指定</param>
+		/// <returns></returns>
+		public Bitmap CreatePartialImg( System.Drawing.Drawing2D.GraphicsPath Path )
+		{
+			var AABB = Rectangle.Round( Path.GetBounds() );
+			++AABB.Width;
+			++AABB.Height;
+			AABB.Intersect( new Rectangle( new Point(0,0), m_BMP.Size ) );
+			var BMP = m_BMP.Clone( AABB, System.Drawing.Imaging.PixelFormat.Format32bppArgb );
+
+			const int BPP = 4;	//Bytes per Pixel
+			System.Drawing.Imaging.BitmapData bmpData = BMP.LockBits( new Rectangle( 0,0, BMP.Width,BMP.Height ), System.Drawing.Imaging.ImageLockMode.ReadWrite, BMP.PixelFormat );
+			
+			unsafe
+			{
+				IntPtr ptr = bmpData.Scan0;
+				for( int y=0; y<BMP.Height; ++y )
+				{
+					int SrcY = y + AABB.Top;
+					Byte* p = (Byte*)ptr.ToPointer() + bmpData.Stride*y;
+					for( int x=0; x<BMP.Width; ++x )
+					{
+						int SrcX = x + AABB.Left;
+						if( !Path.IsVisible( SrcX, SrcY )  &&  !Path.IsOutlineVisible( SrcX,SrcY, Pens.Gray ) )
+						{	p[3] = 0;	}
+
+						p += BPP;
+					}
+				}
+			}
+			BMP.UnlockBits(bmpData);
+
+			return BMP;
+		}
 
 		/// <summary>
 		/// 描画処理の実施
