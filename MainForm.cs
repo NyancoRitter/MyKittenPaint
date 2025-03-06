@@ -15,8 +15,9 @@ namespace MyKittenPaint
 	/// </summary>
 	public partial class MainForm : Form, IView
 	{
-		private readonly Presenter m_Presenter;
-		private ThumbnailForm m_ThumbnailForm;
+		private readonly Presenter m_Presenter;	//APPロジック
+		private ThumbnailForm m_ThumbnailForm;	//サムネイル表示
+		private bool m_IsInMenuActiveCondition = false;	//メニュー操作状態にあるか否か
 
 		//-----------------------------------
 
@@ -46,6 +47,20 @@ namespace MyKittenPaint
 			Settings.ShowFullPath = ShowFullPathOnCaption_ToolStripMenuItem.Checked;
 		}
 
+		//-----------------------------------
+		#region override
+
+		//まず Presenter にキー処理の機会を与える
+		protected override bool ProcessCmdKey( ref System.Windows.Forms.Message Msg, System.Windows.Forms.Keys keys )
+		{
+			if( !m_IsInMenuActiveCondition )	//メニューが最優先
+			{
+				if( m_Presenter.ProcessKeyInput( keys ) )return true;
+			}
+			return base.ProcessCmdKey( ref Msg, keys );
+		}
+
+		#endregion
 		//-----------------------------------
 		#region private methods
 
@@ -332,6 +347,11 @@ namespace MyKittenPaint
 			var FileNames = (string[])e.Data.GetData( DataFormats.FileDrop, false );
 			LoadFrom( FileNames[0] );
 		}
+
+		//メニュー操作状態に入ったとき
+		private void Main_menuStrip_MenuActivate(object sender, EventArgs e){	m_IsInMenuActiveCondition = true;	}
+		//メニュー操作状態から抜けたとき
+		private void Main_menuStrip_MenuDeactivate(object sender, EventArgs e){	m_IsInMenuActiveCondition = false;	}
 
 		#endregion
 		//-----------------------------------

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace MyKittenPaint
 {
@@ -267,7 +268,16 @@ namespace MyKittenPaint
 
 		#endregion
 		//-----------------------------------
-		#region マウス操作時 public
+		#region マウス,キー操作時 public
+
+		/// <summary>キー入力に対する処理の実施</summary>
+		/// <param name="keys">入力キー情報</param>
+		/// <returns>
+		/// 処理を実施した場合にはtrueを返す．
+		/// trueが返された場合には，GUIにキー入力に対応した動作を行わせてはならない．
+		/// </returns>
+		public bool ProcessKeyInput( System.Windows.Forms.Keys keys )
+		{	return m_CurrState.ProcessKeyInput( keys );	}
 
 		/// <summary>画像表示領域内でのマウスボタン押下時の処理の実施</summary>
 		/// <param name="ViewPos">表示画像上での座標</param>
@@ -634,6 +644,14 @@ namespace MyKittenPaint
 			/// <summary>このステートに遷移した直後に呼ばれる</summary>
 			void OnEnter();
 
+			/// <summary>キー入力に対する処理の実施</summary>
+			/// <param name="keys">入力キー情報</param>
+			/// <returns>
+			/// 処理を実施した（キー入力を消費した）場合にはtrueを返す．
+			/// →trueを返した場合には，GUI側はキー入力に対応した動作を行わない．
+			/// </returns>
+			bool ProcessKeyInput( System.Windows.Forms.Keys keys );
+
 			/// <summary>マウスボタン押下時</summary>
 			/// <param name="ImgPos">画像データ上座標</param>
 			/// <param name="button">ボタン</param>
@@ -741,6 +759,9 @@ namespace MyKittenPaint
 			public void PreLeave(){	Util.DisposeBMP( ref m_EditImg );	}
 			public void OnEnter(){	/*NOP*/	}
 			public void OnOutsidePosClicked( System.Windows.Forms.MouseButtons button ){	/*NOP*/	}
+
+			//編集処理中はGUIのキーによる操作を抑制
+			public bool ProcessKeyInput( System.Windows.Forms.Keys keys ){	return IsBusy();	}
 
 			//
 			public void OnMouseDown( Point ImgPos, System.Windows.Forms.MouseButtons button )
@@ -968,6 +989,52 @@ namespace MyKittenPaint
 			public void PreLeave(){	m_Owner.m_IView?.ChangeImgViewCursorTo( System.Windows.Forms.Cursors.Default );	}
 			public void OnEnter(){	/*NOP*/	}
 
+			public bool ProcessKeyInput( System.Windows.Forms.Keys keys )
+			{
+				if( m_AABB.IsEmpty )return false;
+
+				//矢印キーを処理する
+				int dx=0;
+				int dy=0;
+				var KeyCode = ( keys & Keys.KeyCode );
+				if( KeyCode == Keys.Left ){	--dx;	}
+				if( KeyCode == Keys.Right ){	++dx;	}
+				if( KeyCode == Keys.Up ){	--dy;	}
+				if( KeyCode == Keys.Down ){	++dy;	}
+				if( dx==0 && dy==0 )return false;
+
+				var Modifier = ( keys & Keys.Modifiers );
+
+				if( IsFreeFormMode )
+				{//※MEMO : 現状の範囲表示方法では自由形状範囲を動かしても意味不明であるから何もしない．
+					//ただしキー入力は消費したことにする
+					return true;
+				}
+				else
+				{//矩形モード時
+					if( Modifier==Keys.Control || Modifier==Keys.Shift )
+					{//Ctrl or Shift + 矢印 で範囲サイズを変更
+						if( dx<0 && (m_AABB.Width<=1) ){	dx = 0;	}
+						if( dx>0 ){	dx = Math.Min( dx, m_Owner.ImgWidth-m_AABB.Right );	}
+						if( dy<0 && (m_AABB.Height<=1) ){	dy = 0;	}
+						if( dy>0 ){	dy = Math.Min( dy, m_Owner.ImgHeight-m_AABB.Bottom );	}
+
+						if( dx!=0 || dy!=0 )
+						{
+							m_AABB.Width += dx;
+							m_AABB.Height += dy;
+							m_Owner.m_IView.OnImgPainted();
+						}
+					}
+					else
+					{//範囲を平行移動
+						if( OffsetRegion( dx,dy ) )
+						{	m_Owner.m_IView.OnImgPainted();	}
+					}
+				}
+				return true;
+			}
+
 			//
 			public void OnMouseDown( Point ImgPos, System.Windows.Forms.MouseButtons button )
 			{
@@ -1049,8 +1116,8 @@ namespace MyKittenPaint
 			//このステートに入った際のツールとは別のツールが選択されたらその時点で現在の範囲選択状態は破棄
 			public void OnToolSelected( ToolType SelectedTool )
 			{
-				if( IsFreeFormMode  &&  SelectedTool==ToolType.FreeFormAreaSelect )return;
-				else if( SelectedTool==ToolType.RectAreaSelect )return;
+				if( IsFreeFormMode &&  SelectedTool==ToolType.FreeFormAreaSelect )return;
+				if( !IsFreeFormMode  &&  SelectedTool==ToolType.RectAreaSelect )return;
 
 				m_Owner.DiscardCurrSelection();
 			}
@@ -1135,6 +1202,24 @@ namespace MyKittenPaint
 					Path.AddPolygon( m_FreeFormVtxs );
 					return Path;
 				}
+			}
+
+			//選択領域を画像領域をはみ出さない範囲でオフセットする．オフセットしたか否かを返す．
+			private bool OffsetRegion( int dx, int dy )
+			{
+				if( dx<0 ){	dx = Math.Max( -m_AABB.Left, dx );	}
+				if( dx>0 ){	dx = Math.Min( dx, m_Owner.ImgWidth-m_AABB.Right );	}
+				if( dy<0 ){	dy = Math.Max( -m_AABB.Top, dy );	}
+				if( dy>0 ){	dy = Math.Min( dy, m_Owner.ImgHeight-m_AABB.Bottom );	}
+				
+				if( dx==0 && dy==0 )return false;
+				m_AABB.Offset( dx, dy );
+				if( m_FreeFormVtxs != null )
+				{
+					for( int i=0; i<m_FreeFormVtxs.Length; ++i )
+					{	m_FreeFormVtxs[i].Offset(dx,dy);	}
+				}
+				return true;
 			}
 
 			#endregion
@@ -1250,6 +1335,27 @@ namespace MyKittenPaint
 
 			public void OnEnter()
 			{	m_Owner.m_IView.UpdateSizeInfoView( m_FloatingImg.Size );	}
+
+			//
+			public bool ProcessKeyInput( System.Windows.Forms.Keys keys )
+			{
+				if( m_IsDragging )return true;
+
+				//矢印キーを処理する
+				int dx=0;
+				int dy=0;
+				var KeyCode = ( keys & Keys.KeyCode );
+				if( KeyCode == Keys.Left ){	--dx;	}
+				if( KeyCode == Keys.Right ){	++dx;	}
+				if( KeyCode == Keys.Up ){	--dy;	}
+				if( KeyCode == Keys.Down ){	++dy;	}
+				if( dx==0 && dy==0 )return false;
+
+				m_TopLeft.X += dx;
+				m_TopLeft.Y += dy;
+				m_Owner.m_IView.OnImgPainted();
+				return true;
+			}
 
 			//
 			public void OnMouseDown( Point ImgPos, System.Windows.Forms.MouseButtons button )

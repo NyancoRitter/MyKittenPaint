@@ -57,6 +57,7 @@ namespace MyKittenPaint
 			this.Edit_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Undo_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Redo_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.DiscardUnoRedoData_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.Copy_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Cut_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,7 +79,6 @@ namespace MyKittenPaint
 			this.ShowFullPathOnCaption_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Help_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Version_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.DiscardUnoRedoData_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Main_toolStripContainer.BottomToolStripPanel.SuspendLayout();
 			this.Main_toolStripContainer.ContentPanel.SuspendLayout();
 			this.Main_toolStripContainer.TopToolStripPanel.SuspendLayout();
@@ -349,6 +349,8 @@ namespace MyKittenPaint
 			this.Main_menuStrip.Size = new System.Drawing.Size(850, 28);
 			this.Main_menuStrip.TabIndex = 0;
 			this.Main_menuStrip.Text = "menuStrip1";
+			this.Main_menuStrip.MenuActivate += new System.EventHandler(this.Main_menuStrip_MenuActivate);
+			this.Main_menuStrip.MenuDeactivate += new System.EventHandler(this.Main_menuStrip_MenuDeactivate);
 			// 
 			// File_ToolStripMenuItem
 			// 
@@ -428,6 +430,13 @@ namespace MyKittenPaint
 			this.Redo_ToolStripMenuItem.Size = new System.Drawing.Size(259, 26);
 			this.Redo_ToolStripMenuItem.Text = "Redo";
 			this.Redo_ToolStripMenuItem.Click += new System.EventHandler(this.Redo_ToolStripMenuItem_Click);
+			// 
+			// DiscardUnoRedoData_ToolStripMenuItem
+			// 
+			this.DiscardUnoRedoData_ToolStripMenuItem.Name = "DiscardUnoRedoData_ToolStripMenuItem";
+			this.DiscardUnoRedoData_ToolStripMenuItem.Size = new System.Drawing.Size(259, 26);
+			this.DiscardUnoRedoData_ToolStripMenuItem.Text = "Discard Undo/Redo Data";
+			this.DiscardUnoRedoData_ToolStripMenuItem.Click += new System.EventHandler(this.DiscardUnoRedoData_ToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator2
 			// 
@@ -584,13 +593,6 @@ namespace MyKittenPaint
 			this.Version_ToolStripMenuItem.Size = new System.Drawing.Size(168, 26);
 			this.Version_ToolStripMenuItem.Text = "Version(&V)...";
 			this.Version_ToolStripMenuItem.Click += new System.EventHandler(this.Version_ToolStripMenuItem_Click);
-			// 
-			// DiscardUnoRedoData_ToolStripMenuItem
-			// 
-			this.DiscardUnoRedoData_ToolStripMenuItem.Name = "DiscardUnoRedoData_ToolStripMenuItem";
-			this.DiscardUnoRedoData_ToolStripMenuItem.Size = new System.Drawing.Size(259, 26);
-			this.DiscardUnoRedoData_ToolStripMenuItem.Text = "Discard Undo/Redo Data";
-			this.DiscardUnoRedoData_ToolStripMenuItem.Click += new System.EventHandler(this.DiscardUnoRedoData_ToolStripMenuItem_Click);
 			// 
 			// MainForm
 			// 
