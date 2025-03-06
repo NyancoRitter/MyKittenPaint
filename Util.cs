@@ -28,7 +28,7 @@ namespace MyKittenPaint
 
 		/// <summary>
 		/// Bitmapをクリップボードにコピーする．
-		/// ただし，Format32bppArgb の場合には他APPにペーストできる形にはならない
+		/// ただし，Format32bppArgb の場合には他APPにうまくペーストできる形にはならない
 		/// </summary>
 		/// <param name="bmp">クリップボードにコピーするBitmap</param>
 		public static void CopyBMP_To_Clipboard( Bitmap bmp )
@@ -41,8 +41,15 @@ namespace MyKittenPaint
 				var DataObj = new System.Windows.Forms.DataObject();
 				using( var PngMemStrm = new System.IO.MemoryStream() )
 				{
+					//てきとーに"PNG" というフォーマット名で突っ込む
 					bmp.Save( PngMemStrm, System.Drawing.Imaging.ImageFormat.Png );
-					DataObj.SetData( "PNG", false, PngMemStrm );	//てきとーに"PNG" というフォーマット名で突っ込む
+					DataObj.SetData( "PNG", false, PngMemStrm );
+
+					//他のAPPへのペーストを考慮して DIB 形式も入れておく．
+					//これだと「透明箇所が灰色になった画像」になるようだ．
+					DataObj.SetData( System.Windows.Forms.DataFormats.Dib, true, bmp );
+
+					//
 					System.Windows.Forms.Clipboard.SetDataObject( DataObj, true );
 				}
 			}

@@ -89,18 +89,12 @@ namespace MyKittenPaint
 		{
 			if( m_CurrState.IsBusy() )return;
 			m_Content = new Content( w,h );
-			{
-				m_EditHistory.Clear();
-				m_iHistoryPointer = 0;
-				m_EditHistory.Add(
-					new EditSeq()
-						.Add( new ChangeImgSize( new Size(w,h), Content.InitialColor ) )
-						.Add( new FillRect( new Rectangle(0,0,w,h), Content.InitialColor ) )
-				);
-			}
+			DiscardEditHistoryData();
 			LastSaveLoadFilePath = "";
-			m_IView?.OnImgSizeChanged();
 			DiscardCurrSelection();
+			IsImageJustAfterInitialized = true;
+
+			m_IView?.OnImgSizeChanged();
 		}
 
 		/// <summary>画像サイズの変更</summary>
@@ -161,13 +155,12 @@ namespace MyKittenPaint
 			using( var Loaded = Image.FromFile( LoadFilePath ) )
 			{	NewBMP = new Bitmap( Loaded );	}
 
-			m_EditHistory.Clear();
-			m_iHistoryPointer = 0;
+			m_Content.ChangeTo( NewBMP );
+			DiscardEditHistoryData();
 			DiscardCurrSelection();
 			LastSaveLoadFilePath = LoadFilePath;
-
-			var Editor = new ChangeImg( NewBMP );
-			EditWith( Editor );
+			IsImageJustAfterInitialized = true;
+			m_IView?.OnImgSizeChanged();
 			return true;
 		}
 
@@ -403,16 +396,33 @@ namespace MyKittenPaint
 		}
 
 		/// <summary>
-		/// 編集履歴が存在しない状態か否か．
-		/// （：新規作成やファイル読込直後の状態か否か）
+		/// 既存の Undo/Redo 用の履歴データを全て破棄する．
+		///		<remarks>
+		///		※現在，この処理からはView側への表示更新要求が発生しないので注意．
+		///		（：View側からこれを呼んだら，自主的にGUI更新をする必要がある）
+		///		</remarks>
 		/// </summary>
-		/// <returns></returns>
-		public bool NoEditHistory()
-		{	return ( m_EditHistory.Count <= 1 );	}
+		public void DiscardEditHistoryData()
+		{
+			m_EditHistory.Clear();
+			m_iHistoryPointer = 0;
+			m_EditHistory.Add( new ChangeImg( m_Content.CreateCurrImgClone() ) );
+		}
 
 		#endregion
 		//-----------------------------------
 		#region その他 public
+
+		/// <summary>
+		/// 新規作成やファイル読込直後の状態か否か．
+		/// View側からの状態問い合わせ用．
+		///		<remarks>
+		///		想定用途は，
+		///		「別のファイルのロードやAPPの終了時等に確認を出すべきかどうかを判断する用」である．
+		///		「画像の内容が初期と同一か？」ではないので，判断基準としては今一つな情報だが……
+		///		</remarks>
+		/// </summary>
+		public bool IsImageJustAfterInitialized{	get;	private set;	}
 
 		/// <summary>左右ボタンの色をSWAP</summary>
 		public void SwapLRColor()
@@ -490,6 +500,7 @@ namespace MyKittenPaint
 			if( WhatDone != EditTypes.None )
 			{
 				AddToEditHistory( Editor );
+				IsImageJustAfterInitialized = false;
 				UpdateView( WhatDone );
 			}
 		}

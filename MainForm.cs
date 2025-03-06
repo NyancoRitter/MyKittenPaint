@@ -63,6 +63,8 @@ namespace MyKittenPaint
 		{
 			Undo_ToolStripMenuItem.Enabled = m_Presenter.CanUndo();
 			Redo_ToolStripMenuItem.Enabled = m_Presenter.CanRedo();
+
+			DiscardUnoRedoData_ToolStripMenuItem.Enabled = ( m_Presenter.CanUndo() || m_Presenter.CanRedo() );
 		}
 
 		/// <summary>画像保存処理</summary>
@@ -91,7 +93,7 @@ namespace MyKittenPaint
 		/// <param name="LoadFilePath">読込ファイルパス</param>
 		private void LoadFrom( string LoadFilePath )
 		{
-			if( !m_Presenter.NoEditHistory() )
+			if( !m_Presenter.IsImageJustAfterInitialized )
 			{
 				if(
 					MessageBox.Show(
@@ -280,7 +282,7 @@ namespace MyKittenPaint
 		//FormClosing
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			if( !m_Presenter.NoEditHistory() )
+			if( !m_Presenter.IsImageJustAfterInitialized )
 			{
 				if( MessageBox.Show( this, "Are you sure you want to exit?", "Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation ) != DialogResult.OK )
 				{	e.Cancel = true;	}
@@ -419,6 +421,24 @@ namespace MyKittenPaint
 		//Redo
 		private void Redo_ToolStripMenuItem_Click(object sender, EventArgs e){	m_Presenter.Redo();	}
 
+		//Discard Undo/Redo Data
+		private void DiscardUnoRedoData_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if(
+				MessageBox.Show(
+					this,
+					"Are you sure you want to discard edit_history_data?",
+					"Confirmation",
+					MessageBoxButtons.OKCancel,
+					MessageBoxIcon.Exclamation
+				)
+				!= DialogResult.OK
+			)
+			{	return;	}
+			m_Presenter.DiscardEditHistoryData();
+			UpdateUndoRedoMenuState();
+		}
+
 		//Copy
 		private void Copy_ToolStripMenuItem_Click(object sender, EventArgs e){	m_Presenter.Copy();	}
 		//Cut
@@ -533,6 +553,5 @@ namespace MyKittenPaint
 		}
 
 		#endregion
-
 	}
 }

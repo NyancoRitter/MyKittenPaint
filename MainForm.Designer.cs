@@ -78,6 +78,7 @@ namespace MyKittenPaint
 			this.ShowFullPathOnCaption_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Help_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Version_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.DiscardUnoRedoData_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Main_toolStripContainer.BottomToolStripPanel.SuspendLayout();
 			this.Main_toolStripContainer.ContentPanel.SuspendLayout();
 			this.Main_toolStripContainer.TopToolStripPanel.SuspendLayout();
@@ -400,6 +401,7 @@ namespace MyKittenPaint
 			this.Edit_ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Undo_ToolStripMenuItem,
             this.Redo_ToolStripMenuItem,
+            this.DiscardUnoRedoData_ToolStripMenuItem,
             this.toolStripSeparator2,
             this.Copy_ToolStripMenuItem,
             this.Cut_ToolStripMenuItem,
@@ -415,7 +417,7 @@ namespace MyKittenPaint
 			// 
 			this.Undo_ToolStripMenuItem.Name = "Undo_ToolStripMenuItem";
 			this.Undo_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-			this.Undo_ToolStripMenuItem.Size = new System.Drawing.Size(223, 26);
+			this.Undo_ToolStripMenuItem.Size = new System.Drawing.Size(259, 26);
 			this.Undo_ToolStripMenuItem.Text = "Undo";
 			this.Undo_ToolStripMenuItem.Click += new System.EventHandler(this.Undo_ToolStripMenuItem_Click);
 			// 
@@ -423,20 +425,20 @@ namespace MyKittenPaint
 			// 
 			this.Redo_ToolStripMenuItem.Name = "Redo_ToolStripMenuItem";
 			this.Redo_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-			this.Redo_ToolStripMenuItem.Size = new System.Drawing.Size(223, 26);
+			this.Redo_ToolStripMenuItem.Size = new System.Drawing.Size(259, 26);
 			this.Redo_ToolStripMenuItem.Text = "Redo";
 			this.Redo_ToolStripMenuItem.Click += new System.EventHandler(this.Redo_ToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(220, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(256, 6);
 			// 
 			// Copy_ToolStripMenuItem
 			// 
 			this.Copy_ToolStripMenuItem.Name = "Copy_ToolStripMenuItem";
 			this.Copy_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.Copy_ToolStripMenuItem.Size = new System.Drawing.Size(223, 26);
+			this.Copy_ToolStripMenuItem.Size = new System.Drawing.Size(259, 26);
 			this.Copy_ToolStripMenuItem.Text = "Copy";
 			this.Copy_ToolStripMenuItem.Click += new System.EventHandler(this.Copy_ToolStripMenuItem_Click);
 			// 
@@ -444,7 +446,7 @@ namespace MyKittenPaint
 			// 
 			this.Cut_ToolStripMenuItem.Name = "Cut_ToolStripMenuItem";
 			this.Cut_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-			this.Cut_ToolStripMenuItem.Size = new System.Drawing.Size(223, 26);
+			this.Cut_ToolStripMenuItem.Size = new System.Drawing.Size(259, 26);
 			this.Cut_ToolStripMenuItem.Text = "Cut";
 			this.Cut_ToolStripMenuItem.Click += new System.EventHandler(this.Cut_ToolStripMenuItem_Click);
 			// 
@@ -452,20 +454,20 @@ namespace MyKittenPaint
 			// 
 			this.Paste_ToolStripMenuItem.Name = "Paste_ToolStripMenuItem";
 			this.Paste_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-			this.Paste_ToolStripMenuItem.Size = new System.Drawing.Size(223, 26);
+			this.Paste_ToolStripMenuItem.Size = new System.Drawing.Size(259, 26);
 			this.Paste_ToolStripMenuItem.Text = "Paste";
 			this.Paste_ToolStripMenuItem.Click += new System.EventHandler(this.Paste_ToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator3
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(220, 6);
+			this.toolStripSeparator3.Size = new System.Drawing.Size(256, 6);
 			// 
 			// SelectAll_ToolStripMenuItem
 			// 
 			this.SelectAll_ToolStripMenuItem.Name = "SelectAll_ToolStripMenuItem";
 			this.SelectAll_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-			this.SelectAll_ToolStripMenuItem.Size = new System.Drawing.Size(223, 26);
+			this.SelectAll_ToolStripMenuItem.Size = new System.Drawing.Size(259, 26);
 			this.SelectAll_ToolStripMenuItem.Text = "Select All";
 			this.SelectAll_ToolStripMenuItem.Click += new System.EventHandler(this.SelectAll_ToolStripMenuItem_Click);
 			// 
@@ -473,7 +475,7 @@ namespace MyKittenPaint
 			// 
 			this.ClearSelection_ToolStripMenuItem.Name = "ClearSelection_ToolStripMenuItem";
 			this.ClearSelection_ToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.ClearSelection_ToolStripMenuItem.Size = new System.Drawing.Size(223, 26);
+			this.ClearSelection_ToolStripMenuItem.Size = new System.Drawing.Size(259, 26);
 			this.ClearSelection_ToolStripMenuItem.Text = "Clear Selection";
 			this.ClearSelection_ToolStripMenuItem.Click += new System.EventHandler(this.ClearSelection_ToolStripMenuItem_Click);
 			// 
@@ -583,6 +585,13 @@ namespace MyKittenPaint
 			this.Version_ToolStripMenuItem.Text = "Version(&V)...";
 			this.Version_ToolStripMenuItem.Click += new System.EventHandler(this.Version_ToolStripMenuItem_Click);
 			// 
+			// DiscardUnoRedoData_ToolStripMenuItem
+			// 
+			this.DiscardUnoRedoData_ToolStripMenuItem.Name = "DiscardUnoRedoData_ToolStripMenuItem";
+			this.DiscardUnoRedoData_ToolStripMenuItem.Size = new System.Drawing.Size(259, 26);
+			this.DiscardUnoRedoData_ToolStripMenuItem.Text = "Discard Undo/Redo Data";
+			this.DiscardUnoRedoData_ToolStripMenuItem.Click += new System.EventHandler(this.DiscardUnoRedoData_ToolStripMenuItem_Click);
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -680,6 +689,7 @@ namespace MyKittenPaint
 		private System.Windows.Forms.ToolStripMenuItem ShowGrid_ToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripMenuItem GridSize_ToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem DiscardUnoRedoData_ToolStripMenuItem;
 	}
 }
 
