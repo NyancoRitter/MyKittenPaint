@@ -126,26 +126,38 @@ namespace MyKittenPaint
 
 			const int BPP = 4;	//Bytes per Pixel
 			System.Drawing.Imaging.BitmapData bmpData = BMP.LockBits( new Rectangle( 0,0, BMP.Width,BMP.Height ), System.Drawing.Imaging.ImageLockMode.ReadWrite, BMP.PixelFormat );
-			
+
+			var Mask = new Bitmap(BMP.Width, BMP.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+			using( var g = Graphics.FromImage( Mask ) )
+			{
+				g.Clear( Color.Black );
+				g.TranslateTransform( -AABB.Left, -AABB.Top );
+				g.FillPath( Brushes.White, Path );
+				g.DrawPath( Pens.White, Path );
+			}
+			System.Drawing.Imaging.BitmapData MaskData = Mask.LockBits( new Rectangle( 0,0, BMP.Width,BMP.Height ), System.Drawing.Imaging.ImageLockMode.ReadOnly, Mask.PixelFormat );
+
 			unsafe
 			{
 				IntPtr ptr = bmpData.Scan0;
+				IntPtr pMask = MaskData.Scan0;
 				for( int y=0; y<BMP.Height; ++y )
 				{
-					int SrcY = y + AABB.Top;
 					Byte* p = (Byte*)ptr.ToPointer() + bmpData.Stride*y;
+					Byte* pM = (Byte*)pMask.ToPointer() + MaskData.Stride*y;
 					for( int x=0; x<BMP.Width; ++x )
 					{
-						int SrcX = x + AABB.Left;
-						if( !Path.IsVisible( SrcX, SrcY )  &&  !Path.IsOutlineVisible( SrcX,SrcY, Pens.Gray ) )
+						if( pM[0]==0 )
 						{	p[3] = 0;	}
 
 						p += BPP;
+						pM += 3;
 					}
 				}
 			}
 			BMP.UnlockBits(bmpData);
-
+			Mask.UnlockBits(MaskData);
+			Mask.Dispose();
 			return BMP;
 		}
 
@@ -171,12 +183,6 @@ namespace MyKittenPaint
 		/// <param name="BMP"></param>
 		/// <returns>判定結果．同一と思われるならtrue</returns>
 		public bool IsSame( Bitmap BMP ){	return Util.IsSame( m_BMP, BMP );	}
-
-		#endregion
-		//-----------------------------------
-		#region private methods
-
-
 
 		#endregion
 	}
