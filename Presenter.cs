@@ -1097,6 +1097,20 @@ namespace MyKittenPaint
 				int MagRate = m_Owner.ViewMagnificationRate;
 				m_Owner.m_Content.DrawMagnifiedImgTo( g, MagRate );
 				m_Owner.DrawGrid( g );
+
+				if( IsFreeFormMode )
+				{
+					using( var Pen1 = new Pen( new System.Drawing.Drawing2D.HatchBrush( System.Drawing.Drawing2D.HatchStyle.Percent50, Color.Gray, Color.Transparent ) ) )
+					using( var Pen2 = new Pen( new System.Drawing.Drawing2D.HatchBrush( System.Drawing.Drawing2D.HatchStyle.Percent10, Color.LightGray, Color.Transparent ) ) )
+					{
+						g.ScaleTransform( MagRate,MagRate );
+						g.TranslateTransform( 0.5f, 0.5f );	//※何故か半画素ずれるので補正
+						g.DrawPath( Pen1, FreeFormPath );
+						g.DrawPath( Pen2, FreeFormPath );
+						g.ResetTransform();
+					}
+				}
+
 				Util.DrawRectSelectionState( g, m_AABB, MagRate, true );
 			}
 
@@ -1241,7 +1255,7 @@ namespace MyKittenPaint
 			private Point m_TopLeft;
 			private Bitmap m_FloatingImg;
 
-			//初期範囲を背景色で塗りつぶす処理．塗りつぶしが不要な場合には bull．
+			//初期範囲を背景色で塗りつぶす処理．塗りつぶしが不要な場合には null．
 			private FillPath m_FillInitialArea = null;
 
 			//ドラッグ操作用
