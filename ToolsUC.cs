@@ -36,30 +36,34 @@ namespace MyKittenPaint
 			{
 				DisableCtrlEventHandler = true;
 
-				if( type.IsAreaSelectTool() )
+				TabPage TabToBeSelected = Main_tabControl.SelectedTab;
+
+				switch( type )
 				{
-					if( Main_tabControl.SelectedTab != Select_tabPage )
-					{	Main_tabControl.SelectedTab = Select_tabPage;	}
+				case ToolType.Pen:
+					TabToBeSelected = Pen_tabPage;
+					break;
+				case ToolType.Brush:
+					TabToBeSelected = Pen_tabPage;
+					break;
 
-					if( type == ToolType.RectAreaSelect )
-					{	RectSelMode_radioButton.Checked = true;	}
-					else
-					{	FreeFormSelMode_radioButton.Checked = true;	}
+				case ToolType.RectAreaSelect:
+					TabToBeSelected = Select_tabPage;
+					RectSelMode_radioButton.Checked = true;
+					break;
+				case ToolType.FreeFormAreaSelect:
+					TabToBeSelected = Select_tabPage;
+					FreeFormSelMode_radioButton.Checked = true;
+					break;
 
-					return;
+				case ToolType.Line:	TabToBeSelected = Line_tabPage;	break;
+				case ToolType.Eraser:	TabToBeSelected = Eraser_tabPage;	break;
+				case ToolType.Fill:	TabToBeSelected = Fill_tabPage;	break;
+				default:	break;
 				}
 
-				//※TabPage.Tag に ToolType が記録されている想定
-				for( int i=0; i<Main_tabControl.TabCount; ++i )
-				{
-					if( type == (ToolType)Main_tabControl.TabPages[i].Tag )
-					{
-						if( Main_tabControl.SelectedIndex != i )
-						{	Main_tabControl.SelectedIndex = i;	}
-
-						break;
-					}
-				}
+				if( Main_tabControl.SelectedTab != TabToBeSelected )
+				{	Main_tabControl.SelectedTab = TabToBeSelected;	}
 			}
 			finally
 			{	DisableCtrlEventHandler = false;	}
@@ -138,13 +142,6 @@ namespace MyKittenPaint
 		{
 			if( DesignMode )return;
 
-			//TabPage.Tag に ToolType を記録しておく．
-			Pen_tabPage.Tag = ToolType.Pen;
-			Line_tabPage.Tag = ToolType.Line;
-			Select_tabPage.Tag = ToolType.RectAreaSelect;	//※とりあえず RectAreaSelect にしておく
-			Eraser_tabPage.Tag = ToolType.Eraser;
-			Fill_tabPage.Tag = ToolType.Fill;
-
 			//
 			UpdateTabText();
 
@@ -162,13 +159,17 @@ namespace MyKittenPaint
 			if( Main_tabControl.SelectedIndex < 0 )return;
 
 			{//Observerへの通知
-				//※TabPage.Tag に ToolType が記録されている想定
-				var SelectedToolType =  (ToolType)Main_tabControl.SelectedTab.Tag;
+				var SelectedToolType = ToolType.Pen;
 
-				//選択ツールのタブだけはコントロール状態でツール種類が決まる
-				if( SelectedToolType.IsAreaSelectTool()  &&  FreeFormSelMode_radioButton.Checked )
-				{	SelectedToolType = ToolType.FreeFormAreaSelect;	}
-
+				if( Main_tabControl.SelectedTab == Pen_tabPage )
+				{ }
+				else if( Main_tabControl.SelectedTab == Select_tabPage )
+				{	SelectedToolType = ( FreeFormSelMode_radioButton.Checked ? ToolType.FreeFormAreaSelect : ToolType.RectAreaSelect );	}
+				else if( Main_tabControl.SelectedTab == Line_tabPage ){	SelectedToolType = ToolType.Line;	}
+				else if( Main_tabControl.SelectedTab == Eraser_tabPage ){	SelectedToolType = ToolType.Eraser;	}
+				else if( Main_tabControl.SelectedTab == Fill_tabPage ){	SelectedToolType = ToolType.Fill;	}
+				else {	return;	}	//※ここにはこないハズ
+				
 				Observer?.OnSelectedToolChanged( SelectedToolType );
 			}
 

@@ -590,6 +590,7 @@ namespace MyKittenPaint
 			m_NewAreaSelectedState.Clear();
 			m_ImgFloatingState.Clear();
 			ChangeCurrStateTo( m_NormalState );
+			m_NormalState.OnToolSelected( m_CurrSelToolType );
 			m_IView?.OnSelectionStateChanged( false );
 		}
 

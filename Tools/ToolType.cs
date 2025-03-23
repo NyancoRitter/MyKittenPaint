@@ -8,6 +8,8 @@ namespace MyKittenPaint
 	{
 		/// <summary>ペン</summary>
 		Pen,
+		/// <summary>ブラシ</summary>
+		Brush,
 		/// <summary>直線</summary>
 		Line,
 		/// <summary>矩形範囲選択</summary>
@@ -20,16 +22,16 @@ namespace MyKittenPaint
 		Fill
 	}
 
-	/// <summary>
-	/// ToolType用拡張メソッド
-	/// </summary>
-	public static class ToolTypeExtensions
-	{
-		/// <summary>範囲選択系のツールか否か</summary>
-		/// <param name="t"></param>
-		/// <returns></returns>
-		public static bool IsAreaSelectTool( this ToolType t )
-		{	return ( t==ToolType.RectAreaSelect  ||  t==ToolType.FreeFormAreaSelect );	}	
-	}
+	///// <summary>
+	///// ToolType用拡張メソッド
+	///// </summary>
+	//public static class ToolTypeExtensions
+	//{
+	//	/// <summary>範囲選択系のツールか否か</summary>
+	//	/// <param name="t"></param>
+	//	/// <returns></returns>
+	//	public static bool IsAreaSelectTool( this ToolType t )
+	//	{	return ( t==ToolType.RectAreaSelect  ||  t==ToolType.FreeFormAreaSelect );	}	
+	//}
 
 }
