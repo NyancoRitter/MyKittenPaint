@@ -67,6 +67,8 @@ namespace MyKittenPaint
 			this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
 			this.label9 = new System.Windows.Forms.Label();
 			this.Icon_imageList = new System.Windows.Forms.ImageList(this.components);
+			this.Pen1Pix_radioButton = new System.Windows.Forms.RadioButton();
+			this.Pen2x2_radioButton = new System.Windows.Forms.RadioButton();
 			this.Main_tabControl.SuspendLayout();
 			this.Pen_tabPage.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
@@ -123,12 +125,16 @@ namespace MyKittenPaint
 			// 
 			this.tableLayoutPanel1.ColumnCount = 1;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Controls.Add(this.label3, 0, 0);
-			this.tableLayoutPanel1.Controls.Add(this.label4, 0, 1);
+			this.tableLayoutPanel1.Controls.Add(this.label3, 0, 2);
+			this.tableLayoutPanel1.Controls.Add(this.label4, 0, 3);
+			this.tableLayoutPanel1.Controls.Add(this.Pen1Pix_radioButton, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.Pen2x2_radioButton, 0, 1);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 3;
+			this.tableLayoutPanel1.RowCount = 5;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -141,8 +147,8 @@ namespace MyKittenPaint
 			this.label3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.label3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.label3.Location = new System.Drawing.Point(0, 0);
-			this.label3.Margin = new System.Windows.Forms.Padding(0);
+			this.label3.Location = new System.Drawing.Point(0, 58);
+			this.label3.Margin = new System.Windows.Forms.Padding(0, 8, 0, 0);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(357, 32);
 			this.label3.TabIndex = 1;
@@ -155,7 +161,7 @@ namespace MyKittenPaint
 			this.label4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.label4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.label4.Location = new System.Drawing.Point(0, 32);
+			this.label4.Location = new System.Drawing.Point(0, 90);
 			this.label4.Margin = new System.Windows.Forms.Padding(0);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(357, 17);
@@ -602,6 +608,29 @@ namespace MyKittenPaint
 			this.Icon_imageList.Images.SetKeyName(3, "Eraser.png");
 			this.Icon_imageList.Images.SetKeyName(4, "Fill.png");
 			// 
+			// Pen1Pix_radioButton
+			// 
+			this.Pen1Pix_radioButton.AutoSize = true;
+			this.Pen1Pix_radioButton.Location = new System.Drawing.Point(3, 3);
+			this.Pen1Pix_radioButton.Name = "Pen1Pix_radioButton";
+			this.Pen1Pix_radioButton.Size = new System.Drawing.Size(76, 19);
+			this.Pen1Pix_radioButton.TabIndex = 2;
+			this.Pen1Pix_radioButton.TabStop = true;
+			this.Pen1Pix_radioButton.Text = "1[Pixel]";
+			this.Pen1Pix_radioButton.UseVisualStyleBackColor = true;
+			this.Pen1Pix_radioButton.CheckedChanged += new System.EventHandler(this.Pen1Pix_radioButton_CheckedChanged);
+			// 
+			// Pen2x2_radioButton
+			// 
+			this.Pen2x2_radioButton.AutoSize = true;
+			this.Pen2x2_radioButton.Location = new System.Drawing.Point(3, 28);
+			this.Pen2x2_radioButton.Name = "Pen2x2_radioButton";
+			this.Pen2x2_radioButton.Size = new System.Drawing.Size(51, 19);
+			this.Pen2x2_radioButton.TabIndex = 2;
+			this.Pen2x2_radioButton.TabStop = true;
+			this.Pen2x2_radioButton.Text = "2x2";
+			this.Pen2x2_radioButton.UseVisualStyleBackColor = true;
+			// 
 			// ToolsUC
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -673,5 +702,7 @@ namespace MyKittenPaint
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
 		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.RadioButton Pen1Pix_radioButton;
+		private System.Windows.Forms.RadioButton Pen2x2_radioButton;
 	}
 }

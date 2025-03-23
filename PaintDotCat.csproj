@@ -76,6 +76,7 @@
       <DependentUpon>ColorsUC.cs</DependentUpon>
     </Compile>
     <Compile Include="Content.cs" />
+    <Compile Include="Edits\Bresenham.cs" />
     <Compile Include="Edits\Edit_ImgRect.cs" />
     <Compile Include="Edits\Edit_Line.cs" />
     <Compile Include="Edits\Edit_SizeChange.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Tools\ITool.cs" />
     <Compile Include="Tools\LineTool.cs" />
     <Compile Include="Tools\FillTool.cs" />
+    <Compile Include="Tools\BrushTool.cs" />
     <Compile Include="Tools\PenTool.cs" />
     <Compile Include="Tools\FreeFormSelTool.cs" />
     <Compile Include="Tools\RectSelTool.cs" />

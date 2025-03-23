@@ -133,9 +133,7 @@ namespace MyKittenPaint
 		private readonly System.Drawing.Drawing2D.GraphicsPath m_Path;
 		private readonly Color m_Col;
 
-		/// <summary>
-		/// ctor
-		/// </summary>
+		/// <summary>ctor</summary>
 		/// <param name="Path">範囲．この参照がそのまま保持されるので注意</param>
 		/// <param name="Col">色</param>
 		public FillPath( System.Drawing.Drawing2D.GraphicsPath Path, Color Col )
@@ -150,6 +148,55 @@ namespace MyKittenPaint
 			{
 				g.FillPath( Brush, m_Path );
 				g.DrawPath( Pen, m_Path );
+			}
+		}
+	}
+
+	/// <summary>
+	/// 矩形で折れ線描画：
+	/// 「太い線」な感じ． 折れ線経路上の各画素位置に塗りつぶし矩形を描画
+	/// </summary>
+	public class DrawLinesWithSquare : IEdit, IDraw
+	{
+		private readonly Point[] m_Points;
+		private readonly Color m_Col;
+		private int m_SquareSize = 2;
+
+		/// <summary>ctor</summary>
+		/// <param name="Points">
+		/// 折れ線頂点座標群．２点以上であること．
+		/// 各点は「矩形の左上座標」を示す．
+		/// </param>
+		/// <param name="Col">描画色</param>
+		/// <exception cref="ArgumentException">頂点数が不正の場合</exception>
+		public DrawLinesWithSquare( IReadOnlyList<Point> Points, Color Col )
+		{
+			if( Points.Count<2 )throw new ArgumentException( "Invalid Points" );
+			m_Points = Points.ToArray();
+			m_Col = Col;
+		}
+
+		/// <summary>矩形サイズ（2以上）</summary>
+		public int SquareSize
+		{
+			get{	return m_SquareSize;	}
+			set{	m_SquareSize = Math.Max(2,value);	}
+		}
+
+		public EditTypes Edit( Content Cont ){	Cont.Draw(this);	return EditTypes.Draw;	}	
+		public void Draw( Bitmap BMP )
+		{
+			using( var g = Graphics.FromImage( BMP ) )
+			{
+				using( var Brush = new SolidBrush( m_Col ) )
+				{
+					Action<int,int> Act = (int x, int y)=>{	g.FillRectangle( Brush, x,y, m_SquareSize, m_SquareSize );	};
+
+					for( int i=0; i+1<m_Points.Length; ++i )
+					{
+						Algo.Bresenham( m_Points[i].X, m_Points[i].Y, m_Points[i+1].X, m_Points[i+1].Y, Act );
+					}
+				}
 			}
 		}
 	}

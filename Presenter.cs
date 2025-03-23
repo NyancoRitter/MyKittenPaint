@@ -723,6 +723,7 @@ namespace MyKittenPaint
 			//
 			private ColorPickTool m_ColorPickTool;
 			private PenTool m_PenTool = new PenTool();
+			private BrushTool m_BrushTool = new BrushTool();
 			private LineTool m_LineTool = new LineTool();
 			private EraserTool m_EraserTool = new EraserTool();
 			private RectSelTool m_RectSelTool = new RectSelTool();
@@ -821,6 +822,7 @@ namespace MyKittenPaint
 				switch( SelectedTool )
 				{
 				case ToolType.Pen:	m_CurrTool = m_PenTool;	break;
+				case ToolType.Brush:	m_CurrTool = m_BrushTool;	break;
 				case ToolType.Line:	m_CurrTool = m_LineTool;	break;
 				case ToolType.Eraser:	m_CurrTool = m_EraserTool;	break;
 				case ToolType.Fill:	m_CurrTool = m_FillTool;	break;
@@ -877,6 +879,10 @@ namespace MyKittenPaint
 				case ToolType.Pen:
 					m_PenTool.Setup( Owner.m_DrawColor[iDrawColor] );
 					m_CurrTool = m_PenTool;
+					return true;
+				case ToolType.Brush:
+					m_BrushTool.Setup( Owner.m_DrawColor[iDrawColor] );
+					m_CurrTool = m_BrushTool;
 					return true;
 				case ToolType.Line:
 					m_LineTool.Setup( Owner.m_DrawColor[iDrawColor], Owner.m_IView.CraeteLineToolSetting() );

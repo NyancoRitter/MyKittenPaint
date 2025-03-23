@@ -42,9 +42,11 @@ namespace MyKittenPaint
 				{
 				case ToolType.Pen:
 					TabToBeSelected = Pen_tabPage;
+					Pen1Pix_radioButton.Checked = true;
 					break;
 				case ToolType.Brush:
 					TabToBeSelected = Pen_tabPage;
+					Pen2x2_radioButton.Checked = true;
 					break;
 
 				case ToolType.RectAreaSelect:
@@ -162,7 +164,7 @@ namespace MyKittenPaint
 				var SelectedToolType = ToolType.Pen;
 
 				if( Main_tabControl.SelectedTab == Pen_tabPage )
-				{ }
+				{	SelectedToolType = ( Pen1Pix_radioButton.Checked ? ToolType.Pen : ToolType.Brush );	}
 				else if( Main_tabControl.SelectedTab == Select_tabPage )
 				{	SelectedToolType = ( FreeFormSelMode_radioButton.Checked ? ToolType.FreeFormAreaSelect : ToolType.RectAreaSelect );	}
 				else if( Main_tabControl.SelectedTab == Line_tabPage ){	SelectedToolType = ToolType.Line;	}
@@ -179,11 +181,20 @@ namespace MyKittenPaint
 
 		#endregion
 		//-----------------------------------
+		#region Pen Tool
+
+		private void Pen1Pix_radioButton_CheckedChanged( object sender, EventArgs e )
+		{
+			var Tool = ( Pen1Pix_radioButton.Checked ? ToolType.Pen : ToolType.Brush );
+			Observer?.OnSelectedToolChanged( Tool );
+		}
+
+		#endregion
+		//-----------------------------------
 		#region Line Tool
 
 		private void ResetLineWeight_button_Click(object sender, EventArgs e)
 		{	LineWeight_numericUpDown.Value = 1;	}
-
 
 		#endregion
 		//-----------------------------------
