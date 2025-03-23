@@ -96,7 +96,7 @@ namespace MyKittenPaint
 			}
 			catch( Exception ex )
 			{
-				MessageBox.Show( this, ex.Message, "Save failed" );
+				MessageBox.Show( this, ex.Message + Environment.NewLine + "(" + SaveFilePath + ")", "Save failed" );
 				return;
 			}
 
@@ -134,7 +134,7 @@ namespace MyKittenPaint
 			}
 			catch( Exception ex )
 			{
-				MessageBox.Show( this, ex.Message, "Load failed" );
+				MessageBox.Show( this, ex.Message + Environment.NewLine + "(" + LoadFilePath + ")", "Load failed" );
 				return;
 			}
 
@@ -284,6 +284,12 @@ namespace MyKittenPaint
 				
 				The_toolsUC.Observer = m_Presenter;
 				The_colorsUC.Observer = m_Presenter;
+
+				{//起動時に開くファイルが指定されている場合
+					var CmdLineArgs = Environment.GetCommandLineArgs();
+					if( CmdLineArgs.Length >= 2 )
+					{	LoadFrom( CmdLineArgs[1] );	}
+				}
 
 				//Viewの初期化
 				m_Presenter.ViewInitialization();
