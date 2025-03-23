@@ -132,6 +132,30 @@ namespace MyKittenPaint
 		}
 
 		/// <summary>
+		/// 選択範囲を指定ファイル名で保存する．
+		/// 保存処理自体の失敗時には例外が送出されるので呼び出し側でcatchする必要がある．
+		/// </summary>
+		/// <param name="SaveFilePath">保存パス</param>
+		/// <returns>
+		/// 実施したか否か．状況的に実施できない場合にはfalseを返す．
+		/// 実施した（成功した）場合にはtrue．
+		/// </returns>
+		public bool SaveSelectedAreaAs( string SaveFilePath )
+		{
+			if( m_CurrState.IsBusy() )return false;
+
+			var FileFormat = FileFormatFromPathName( SaveFilePath );
+			if( FileFormat==null )
+			{	throw new ArgumentException( "Invalid File Extension" );	}
+
+			var AreaImg = m_CurrState.CreateSelectedAreaImg();
+			if( AreaImg == null )return false;
+
+			AreaImg.Save( SaveFilePath, FileFormat );
+			return true;
+		}
+
+		/// <summary>
 		/// ファイルを読み込む．
 		/// 読込処理自体の失敗時には例外が送出されるので呼び出し側でcatchする必要がある．
 		/// なお，その際には現在の画像データは保持される．
@@ -702,6 +726,13 @@ namespace MyKittenPaint
 			/// <summary>「Undo」が成される直前の処理</summary>
 			void PreUndo();
 
+			/// <summary>
+			/// 選択範囲の画像を生成する．
+			/// （選択範囲をファイルに出力する機能用）
+			/// </summary>
+			/// <returns>選択範囲の画像．選択範囲が無い場合にはnull</returns>
+			Bitmap CreateSelectedAreaImg();
+
 			/// <summary>「反転/回転」操作が成された際の処理</summary>
 			/// <param name="ActType">操作により選択された処理</param>
 			void RotateFlip( RotateFlipType ActType );
@@ -836,6 +867,7 @@ namespace MyKittenPaint
 			public void Copy( bool IsCut ){	/*NOP*/	}
 			public void PrePaste(){	/*NOP*/	}
 			public void PreUndo(){	/*NOP*/	}
+			public Bitmap CreateSelectedAreaImg(){	return null;	}
 
 			public void RotateFlip( RotateFlipType ActType )
 			{
@@ -1167,6 +1199,7 @@ namespace MyKittenPaint
 
 			public void PrePaste(){	/*NOP*/	}
 			public void PreUndo(){	/*NOP*/	}
+			public Bitmap CreateSelectedAreaImg(){	return m_Owner.m_Content.CreatePartialImg( m_AABB );	}
 
 			public void RotateFlip( RotateFlipType ActType )
 			{
@@ -1489,6 +1522,7 @@ namespace MyKittenPaint
 
 			public void PrePaste(){	AcceptEdit();	}	//ペースト操作が成された場合，まずは現在の場所に確定
 			public void PreUndo(){	AcceptEdit();	}	//Undo操作が成される直前に確定
+			public Bitmap CreateSelectedAreaImg(){	return m_FloatingImg;	}
 
 			public void RotateFlip( RotateFlipType ActType )
 			{

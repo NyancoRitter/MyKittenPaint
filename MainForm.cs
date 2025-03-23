@@ -239,6 +239,7 @@ namespace MyKittenPaint
 			Copy_ToolStripMenuItem.Enabled = Selected;
 			Cut_ToolStripMenuItem.Enabled = Selected;
 			ClearSelection_ToolStripMenuItem.Enabled = Selected;
+			PasteTo_ToolStripMenuItem.Enabled = Selected;
 
 			if( !Selected )
 			{	UpdateSizeInfoView( new Size(m_Presenter.ImgHeight, m_Presenter.ImgHeight) );	}
@@ -472,10 +473,40 @@ namespace MyKittenPaint
 		//Paste
 		private void Paste_ToolStripMenuItem_Click(object sender, EventArgs e){	m_Presenter.Paste();	}
 
-		//全選択
+		//Select All
 		private void SelectAll_ToolStripMenuItem_Click(object sender, EventArgs e){	m_Presenter.SelectAll();	}
 		//Clear Selection
 		private void ClearSelection_ToolStripMenuItem_Click(object sender, EventArgs e){	m_Presenter.ClearSelection();	}
+
+		//Paste To
+		private void PasteTo_ToolStripMenuItem_Click( object sender, EventArgs e )
+		{
+			if( !m_Presenter.CanShowModalDlg() )return;
+			using( var sfd = new SaveFileDialog() )
+			{
+				sfd.Filter = "BMP(*.bmp)|*.bmp|PNG(*.png)|*.png|JPG(*jpg)|*.jpg";
+				sfd.FileName = "untitled";
+				sfd.FilterIndex = 2;
+				sfd.OverwritePrompt = true;
+				if( sfd.ShowDialog() != DialogResult.OK )return;
+
+				try
+				{
+					if( !m_Presenter.SaveSelectedAreaAs( sfd.FileName ) )
+					{
+						MessageBox.Show( this, "Not possible currently...", "Save was not executed" );
+						return;
+					}
+				}
+				catch( Exception ex )
+				{
+					MessageBox.Show( this, ex.Message + Environment.NewLine + "(" + sfd.FileName + ")", "Save failed" );
+					return;
+				}
+
+				InfoSpace_toolStripStatusLabel.Text = "[" + DateTime.Now.ToLongTimeString() + "] Pasted To " + System.IO.Path.GetFileName(sfd.FileName);
+			}
+		}
 
 		#endregion
 		//-----------------------------------

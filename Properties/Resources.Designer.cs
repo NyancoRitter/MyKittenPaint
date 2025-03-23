@@ -101,7 +101,7 @@ namespace MyKittenPaint.Properties {
         }
         
         /// <summary>
-        ///   Ver.1.02 (250323-B) に類似しているローカライズされた文字列を検索します。
+        ///   Ver.1.02 (250323-C) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string SoftVerStr {
             get {
