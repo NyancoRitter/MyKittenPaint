@@ -23,7 +23,7 @@ namespace MyKittenPaint
 		//-----------------------------------
 
 		/// <summary>default ctor</summary>
-		public MainForm(){	InitializeComponent();	}
+		private MainForm(){	InitializeComponent();	}
 
 		/// <summary>実用ctor</summary>
 		/// <param name="Settings">設定</param>

@@ -23,6 +23,23 @@ namespace MyKittenPaint
 	}
 
 	/// <summary>
+	/// Tool関係関数
+	/// </summary>
+	public static class Tool
+	{
+		/// <summary>
+		/// あるツールを選択している状態において
+		/// Ctrlキー押下状態ではスポイトとして機能するべきか否か
+		/// </summary>
+		/// <param name="type">選択中のツール</param>
+		/// <returns>スポイト機能となるべきか否か</returns>
+		public static bool ShouldActAsColorPicker_when_Ctrl( ToolType type )
+		{
+			return (type==ToolType.Pen || type==ToolType.Brush || type==ToolType.Line || type==ToolType.Eraser || type==ToolType.Fill );
+		}
+	}
+
+	/// <summary>
 	/// 描画ツールの I/F
 	/// 
 	/// * マウス操作入力系のメソッドには，「編集中画像バッファ」が渡される．

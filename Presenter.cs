@@ -915,7 +915,7 @@ namespace MyKittenPaint
 				//ツールによってはCtrlキー押下している際にはスポイトツールになる
 				if( 
 					System.Windows.Forms.Control.ModifierKeys.HasFlag( System.Windows.Forms.Keys.Control ) &&
-					ShouldActAsColorPicker_when_Ctrl( CurrSelTool )
+					Tool.ShouldActAsColorPicker_when_Ctrl( CurrSelTool )
 				)
 				{
 					m_ColorPickTool.Setup( this.OnColorPickerFinished, CurrSelTool );
@@ -955,14 +955,6 @@ namespace MyKittenPaint
 				default:
 					return false;
 				}
-			}
-
-			/// <summary>Ctrlキー押下状態では選択中ツールではなくスポイトとして機能するべきか否か</summary>
-			/// <param name="type">選択中のツール</param>
-			/// <returns>スポイト機能となるべきか否か</returns>
-			private static bool ShouldActAsColorPicker_when_Ctrl( ToolType type )
-			{
-				return (type==ToolType.Pen || type==ToolType.Brush || type==ToolType.Line || type==ToolType.Eraser || type==ToolType.Fill );
 			}
 
 			/// <summary>現ツールでのマウス操作結果を処理</summary>
