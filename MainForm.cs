@@ -182,6 +182,8 @@ namespace MyKittenPaint
 		/// <param name="ButtonIndex">ボタン指定．0 or 1</param>
 		private void EditDrawColor( int ButtonIndex )
 		{
+			if( !m_Presenter.CanShowModalDlg() )return;
+
 			Color PrevCol = ( ButtonIndex==0 ? m_Presenter.CurrLColor : m_Presenter.CurrRColor );
 			Color EditedCol = new Color();
 			if( !m_ColorEditor.Edit( PrevCol, out EditedCol, this ) )return;

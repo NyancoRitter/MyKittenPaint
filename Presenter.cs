@@ -860,7 +860,10 @@ namespace MyKittenPaint
 				case ToolType.Pen:	m_CurrTool = m_PenTool;	break;
 				case ToolType.Brush:	m_CurrTool = m_BrushTool;	break;
 				case ToolType.Line:	m_CurrTool = m_LineTool;	break;
-				case ToolType.Eraser:	m_CurrTool = m_EraserTool;	break;
+				case ToolType.Eraser:
+					m_EraserTool.Setup( m_Owner.m_DrawColor[0], m_Owner.m_DrawColor[1], m_Owner.m_IView.GetEraserToolSize() );
+					m_CurrTool = m_EraserTool;
+					break;
 				case ToolType.Fill:	m_CurrTool = m_FillTool;	break;
 				case ToolType.RectAreaSelect:	m_CurrTool = m_RectSelTool;	break;
 				case ToolType.FreeFormAreaSelect:	m_CurrTool = m_FreeFormSelTool;	break;
@@ -949,7 +952,7 @@ namespace MyKittenPaint
 			/// <returns>スポイト機能となるべきか否か</returns>
 			private static bool ShouldActAsColorPicker_when_Ctrl( ToolType type )
 			{
-				return (type==ToolType.Pen || type==ToolType.Line || type==ToolType.Eraser || type==ToolType.Fill );
+				return (type==ToolType.Pen || type==ToolType.Brush || type==ToolType.Line || type==ToolType.Eraser || type==ToolType.Fill );
 			}
 
 			/// <summary>現ツールでのマウス操作結果を処理</summary>

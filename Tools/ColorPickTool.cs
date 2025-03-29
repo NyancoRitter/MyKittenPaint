@@ -69,12 +69,10 @@ namespace MyKittenPaint
 		public ToolProcResult OnMouseUp(Point pos, MouseButtons button, Bitmap BMP)
 		{
 			if( m_iDrawColor>=0  &&  m_iDrawColor==Util.DrawColorIndexFor( button ) )
-			{
-				m_iDrawColor = -1;
-				return ToolProcResult.ShouldUpdateView;
-			}
+			{	m_iDrawColor = -1;	}
 
-			return ToolProcResult.None;
+			return ToolProcResult.ShouldUpdateView;
+			//return ToolProcResult.None;
 		}
 
 		#endregion
