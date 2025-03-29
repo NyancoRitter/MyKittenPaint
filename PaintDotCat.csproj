@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColorEditor.cs" />
     <Compile Include="ColorsUC.cs">
       <SubType>UserControl</SubType>
     </Compile>

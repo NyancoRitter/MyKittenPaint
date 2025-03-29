@@ -18,6 +18,7 @@ namespace MyKittenPaint
 		private readonly Presenter m_Presenter;	//APPロジック
 		private ThumbnailForm m_ThumbnailForm;	//サムネイル表示
 		private bool m_IsInMenuActiveCondition = false;	//メニュー操作状態にあるか否か
+		private ColorEditor m_ColorEditor = new ColorEditor();
 
 		//-----------------------------------
 
@@ -177,6 +178,16 @@ namespace MyKittenPaint
 			{	m_ThumbnailForm.UpdateImg();	}
 		}
 
+		/// <summary>指定ボタンの色のエディット</summary>
+		/// <param name="ButtonIndex">ボタン指定．0 or 1</param>
+		private void EditDrawColor( int ButtonIndex )
+		{
+			Color PrevCol = ( ButtonIndex==0 ? m_Presenter.CurrLColor : m_Presenter.CurrRColor );
+			Color EditedCol = new Color();
+			if( !m_ColorEditor.Edit( PrevCol, out EditedCol, this ) )return;
+			m_Presenter.OnColorSelected( ButtonIndex, EditedCol );
+		}
+
 		#endregion
 		//-----------------------------------
 		#region IView Impl
@@ -285,6 +296,7 @@ namespace MyKittenPaint
 				
 				The_toolsUC.Observer = m_Presenter;
 				The_colorsUC.Observer = m_Presenter;
+				The_colorsUC.ColEditor = m_ColorEditor;
 
 				{//起動時に開くファイルが指定されている場合
 					var CmdLineArgs = Environment.GetCommandLineArgs();
@@ -337,6 +349,11 @@ namespace MyKittenPaint
 
 		//色 SWAP ボタン
 		private void SwapColor_button_Click(object sender, EventArgs e){	m_Presenter.SwapLRColor();	}
+
+		//左カラーダブルクリック
+		private void LColor_pictureBox_DoubleClick( object sender, EventArgs e ){	EditDrawColor(0);	}
+		//右カラーダブルクリック
+		private void RColor_pictureBox_DoubleClick( object sender, EventArgs e ){	EditDrawColor(1);	}
 
 		//ドラッグ＆ドロップの受付判定
 		private void MainForm_DragEnter(object sender, DragEventArgs e)
@@ -608,6 +625,15 @@ namespace MyKittenPaint
 				m_Presenter.GridColor = Dlg.Grid_Color;
 			}
 		}
+
+		#endregion
+		//-----------------------------------
+		#region Color Menu
+
+		//左ボタン色
+		private void LeftColor_ToolStripMenuItem_Click( object sender, EventArgs e ){	EditDrawColor(0);	}
+		//右ボタン色
+		private void RightColor_ToolStripMenuItem_Click( object sender, EventArgs e ){	EditDrawColor(1);	}
 
 		#endregion
 	}

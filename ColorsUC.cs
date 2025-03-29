@@ -11,16 +11,15 @@ using System.Windows.Forms;
 namespace MyKittenPaint
 {
 	/// <summary>
-	/// パレット
+	/// パレットUC
 	/// </summary>
 	public partial class ColorsUC : UserControl
 	{
-		public const int ColumnSize = 9;
-		public const int PalleteSize = ColumnSize*4;
-		public readonly PictureBox[] m_PalettePBs;
-		public int[] m_CreatedCols;	//ColorDialog.CustomColorsの内容を覚えておく用
+		private const int ColumnSize = 9;
+		private const int PalleteSize = ColumnSize*4;
+		private readonly PictureBox[] m_PalettePBs;
 
-		//
+		//ctor
 		public ColorsUC()
 		{
 			InitializeComponent();
@@ -72,9 +71,17 @@ namespace MyKittenPaint
 			}
 		}
 
-		/// <summary>操作に対する処理の実施者</summary>
+		/// <summary>
+		/// 操作に対する処理の実施者．
+		/// パレット使用前に外部から設定される必要がある．
+		/// </summary>
 		public IColorViewOpListener Observer{	get;	set;	}
 
+		/// <summary>
+		/// //色編集処理者．
+		/// パレット使用前に外部から設定される必要がある．
+		/// </summary>
+		public ColorEditor ColEditor{	private get;	set;	}
 
 		//-----------------------------------
 		#region イベントハンドラ
@@ -136,18 +143,9 @@ namespace MyKittenPaint
 			var PB = sender as PictureBox;
 			if( PB==null )return;
 
-			var Dlg = new ColorDialog();
-			Dlg.FullOpen = true;
-			Dlg.Color = PB.BackColor;
-			if( m_CreatedCols != null )
-			{ Dlg.CustomColors = m_CreatedCols; }
-
-			if( Dlg.ShowDialog( this ) != DialogResult.OK )return;
-
-			m_CreatedCols = Dlg.CustomColors;
-			PB.BackColor = Dlg.Color;
-
-			Observer.OnColorSelected( (e.Button==MouseButtons.Left) ? 0 : 1, Dlg.Color );
+			Color EditedColor = new Color();
+			if( ColEditor.Edit( PB.BackColor, out EditedColor, this ) )
+			{	Observer.OnColorSelected( (e.Button==MouseButtons.Left ? 0 : 1), EditedColor );	}
 		}
 
 		#endregion

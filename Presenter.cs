@@ -470,6 +470,11 @@ namespace MyKittenPaint
 			OnRColorChanged();
 		}
 
+		/// <summary>現在の左ボタンの色</summary>
+		public Color CurrLColor => m_DrawColor[0];
+		/// <summary>現在の右ボタンの色</summary>
+		public Color CurrRColor => m_DrawColor[1];
+
 		#endregion
 		//-----------------------------------
 		#region IToolFormOpListener Impl
