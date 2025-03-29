@@ -893,6 +893,14 @@ namespace MyKittenPaint
 			#region private
 
 			/// <summary>
+			/// スポイトツール終了時コールバック用．
+			/// ツール選択状態をスポイト実施直前の物に戻す．
+			/// </summary>
+			/// <param name="ToolToBeSelected">選択し直すべきツール</param>
+			private void OnColorPickerFinished( ToolType ToolToBeSelected )
+			{	OnToolSelected( ToolToBeSelected );	}
+
+			/// <summary>
 			/// マウスボタンが押された際の作業関数．使用すべきツールオブジェクトをセットアップし，m_CurrToolに選択．
 			/// </summary>
 			/// <param name="CurrSelTool">現在GUIで選択されているツール種類</param>
@@ -910,7 +918,9 @@ namespace MyKittenPaint
 					ShouldActAsColorPicker_when_Ctrl( CurrSelTool )
 				)
 				{
+					m_ColorPickTool.Setup( this.OnColorPickerFinished, CurrSelTool );
 					m_CurrTool = m_ColorPickTool;
+					m_Owner.m_IView.OnImgPainted();	//直前のツールが平時に何かを描くタイプだった場合にその表示を消す
 					return true;
 				}
 

@@ -12,13 +12,33 @@ namespace MyKittenPaint
 		//ドラッグしているボタンに対応する描画色index．
 		//	※ 負の値を「業中ではない」という意味合いで用いている 
 		private int m_iDrawColor = -1;
+		//描画色変更処理者
 		private readonly IColorViewOpListener m_Observer;
+
+		private Action<ToolType> m_OnFinishedCallback;
+		private ToolType m_OnFinishedCallbackArg;
+
+		//-----------------------------------
 
 		/// <summary>ctor</summary>
 		/// <param name="P">描画色変更処理者</param>
 		public ColorPickTool( IColorViewOpListener Observer ){	m_Observer=Observer;	}
 
-		//スポイト処理
+		/// <summary>
+		/// スポイトツールを終えるべきタイミングで実施する処理を指定する
+		/// </summary>
+		/// <param name="OnFinishedCallback">処理</param>
+		/// <param name="CallbackArg">処理への引数</param>
+		public void Setup( Action<ToolType> OnFinishedCallback, ToolType CallbackArg )
+		{
+			m_OnFinishedCallback = OnFinishedCallback;
+			m_OnFinishedCallbackArg = CallbackArg;
+		}
+
+		//-----------------------------------
+		#region private
+
+		//スポイト処理実施
 		private void PickupColor( Bitmap BMP, Point pos )
 		{
 			if( m_iDrawColor<0 )return;
@@ -27,6 +47,7 @@ namespace MyKittenPaint
 			m_Observer.OnColorSelected( m_iDrawColor, BMP.GetPixel( pos.X, pos.Y ) );
 		}
 
+		#endregion
 		//-----------------------------------
 		#region ITool Impl
 
@@ -69,10 +90,13 @@ namespace MyKittenPaint
 		public ToolProcResult OnMouseUp(Point pos, MouseButtons button, Bitmap BMP)
 		{
 			if( m_iDrawColor>=0  &&  m_iDrawColor==Util.DrawColorIndexFor( button ) )
-			{	m_iDrawColor = -1;	}
+			{
+				m_iDrawColor = -1;
+				m_OnFinishedCallback?.Invoke( m_OnFinishedCallbackArg );
+				return ToolProcResult.ShouldUpdateView;
+			}
 
-			return ToolProcResult.ShouldUpdateView;
-			//return ToolProcResult.None;
+			return ToolProcResult.None;
 		}
 
 		#endregion
