@@ -1073,6 +1073,7 @@ namespace MyKittenPaint
 							m_AABB.Width += dx;
 							m_AABB.Height += dy;
 							m_Owner.m_IView.OnImgPainted();
+							m_Owner.m_IView.UpdateSizeInfoView( m_AABB.Size );
 						}
 					}
 					else
@@ -1111,7 +1112,7 @@ namespace MyKittenPaint
 						{
 							var RegPath = new System.Drawing.Drawing2D.GraphicsPath();
 							RegPath.AddRectangle( m_AABB );
-							m_Owner.m_ImgFloatingState.Setup( new Point( m_AABB.X, m_AABB.Y ), m_Owner.m_Content.CreatePartialImg( m_AABB ), RegPath );
+							m_Owner.m_ImgFloatingState.Setup( new Point( m_AABB.X, m_AABB.Y ), m_Owner.m_Content.CreatePartialImg( m_AABB ), m_AABB );
 						}
 					}
 					
@@ -1306,7 +1307,7 @@ namespace MyKittenPaint
 			private Bitmap m_FloatingImg;
 
 			//初期範囲を背景色で塗りつぶす処理．塗りつぶしが不要な場合には null．
-			private FillPath m_FillInitialArea = null;
+			private IEdit m_FillInitialArea = null;
 
 			//ドラッグ操作用
 			private bool m_IsDragging = false;
@@ -1351,6 +1352,33 @@ namespace MyKittenPaint
 				}
 				else
 				{	m_FillInitialArea = null;	}
+			}
+
+			/// <summary>
+			/// 開始準備
+			/// </summary>
+			/// <param name="FloatingTopLeft">浮いている絵の初期位置</param>
+			/// <param name="FloatingImg">浮いている絵(この参照がそのまま保持される)</param>
+			/// <param name="EraseRect">
+			/// 背景色で塗りつぶすべき矩形範囲．
+			/// 想定用途：
+			/// * 矩形選択範囲をドラッグすることでこのステートに入る場合に指定する,
+			///   （ドラッグによって画像内容が「移動」されたときに，元の場所の画像内容を消去するための情報）
+			/// </param>
+			public void Setup( Point FloatingTopLeft, Bitmap FloatingImg, Rectangle EraseRect )
+			{
+				m_TopLeft = FloatingTopLeft;
+				m_FloatingImg = FloatingImg;
+				m_IsDragging = false;
+				if( IsTransMode )RecreateTransModeImg();
+
+				Util.DisposeBMP( ref m_EditImg );
+
+				m_EditImg = m_Owner.m_Content.CreateCurrImgClone();
+
+				var FR = new FillRect( EraseRect, m_Owner.m_DrawColor[1] );
+				FR.Draw( m_EditImg );
+				m_FillInitialArea = FR;
 			}
 
 			/// <summary>未セットアップ状態にする</summary>
