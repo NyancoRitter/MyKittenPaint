@@ -131,7 +131,7 @@
     <value>..\Resources\RectSel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SoftVerStr" xml:space="preserve">
-    <value>Ver.1.05 (250517-A)</value>
+    <value>Ver.1.06 (250517-A)</value>
   </data>
   <data name="TransBack" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\TransBack.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
