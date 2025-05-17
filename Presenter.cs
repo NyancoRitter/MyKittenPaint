@@ -176,11 +176,22 @@ namespace MyKittenPaint
 			//※実装MEMO :
 			//Bitmapのctor や Image.FromFile() で読み込んだ場合，
 			//その結果をDispose()するまでファイルがロックされるとかいう話がある
-			Bitmap NewBMP = null;
+			Bitmap NewBMP32 = null;
 			using( var Loaded = Image.FromFile( LoadFilePath ) )
-			{	NewBMP = new Bitmap( Loaded );	}
+			{
+				NewBMP32 = new Bitmap( Loaded );
+			}
 
-			m_Content.ChangeTo( NewBMP );
+			//画像を読み込むと問答無用で32bitになるらしいので24bit化
+			Bitmap NewBMP24 = new Bitmap( NewBMP32.Width, NewBMP32.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb );
+			using( Graphics gr = Graphics.FromImage(NewBMP24) )
+			{
+				 gr.DrawImage( NewBMP32, new Rectangle(0, 0, NewBMP32.Width, NewBMP32.Height) );
+			}
+			NewBMP32.Dispose();
+
+			//
+			m_Content.ChangeTo( NewBMP24 );
 			DiscardEditHistoryData();
 			DiscardCurrSelection();
 			LastSaveLoadFilePath = LoadFilePath;
