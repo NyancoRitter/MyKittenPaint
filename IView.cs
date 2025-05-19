@@ -79,5 +79,14 @@ namespace MyKittenPaint
 		/// </summary>
 		/// <returns>GUI上での選択状態が矩形側ならtrue, 自由形状側ならfalse</returns>
 		bool IsRectModeSelectedForSelectionTool();
+
+		//-----------------------------------
+		//表示状態の取得
+
+		/// <summary>
+		/// 画像表示域のうち，現在のスクロール状況で見えている範囲の左上の座標．
+		/// </summary>
+		/// <returns>表示域のpixel座標系での値</returns>
+		Point VisibleTopLeftOfImgView();
 	}
 }

@@ -382,7 +382,7 @@ namespace MyKittenPaint
 			}
 
 			OnSelectedToolChanged( m_IView.IsRectModeSelectedForSelectionTool()  ?  ToolType.RectAreaSelect  :  ToolType.FreeFormAreaSelect );
-			m_ImgFloatingState.Setup( new Point(0,0), BMP, null );
+			m_ImgFloatingState.Setup( CvtToImgPoint( m_IView.VisibleTopLeftOfImgView() ), BMP, null );
 			ChangeCurrStateTo( m_ImgFloatingState );
 
 			m_IView.OnImgPainted();

@@ -265,6 +265,17 @@ namespace MyKittenPaint
 		/// <inheritdoc/>
 		public void ChangeImgViewCursorTo( System.Windows.Forms.Cursor NewCursor )
 		{	Main_pictureBox.Cursor = NewCursor;	}
+		
+		/// <inheritdoc/>
+		public Point VisibleTopLeftOfImgView()
+		{
+			var VisibleTopLeft = LR_splitContainer.Panel2.PointToScreen( new Point(0,0) );
+			var PictureBoxPos = Main_pictureBox.PointToClient( VisibleTopLeft );
+
+			PictureBoxPos.X = Math.Max( 0, PictureBoxPos.X );
+			PictureBoxPos.Y = Math.Max( 0, PictureBoxPos.Y );
+			return PictureBoxPos;
+		}
 
 		#endregion
 		//-----------------------------------
