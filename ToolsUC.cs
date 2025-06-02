@@ -156,6 +156,9 @@ namespace MyKittenPaint
 		//タブ選択変更時
 		private void Main_tabControl_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			//タブテキスト表示更新
+			UpdateTabText();
+
 			if( DisableCtrlEventHandler )return;
 
 			if( Main_tabControl.SelectedIndex < 0 )return;
@@ -174,9 +177,6 @@ namespace MyKittenPaint
 				
 				Observer?.OnSelectedToolChanged( SelectedToolType );
 			}
-
-			//タブテキスト表示更新
-			UpdateTabText();
 		}
 
 		#endregion
