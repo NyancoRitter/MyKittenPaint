@@ -89,7 +89,7 @@ namespace MyKittenPaint
 		{
 			try
 			{
-				if( !m_Presenter.SaveAs( SaveFilePath ) )
+				if( !m_Presenter.SaveAs(SaveFilePath) )
 				{
 					MessageBox.Show( this, "Not possible currently...", "Save was not executed" );
 					return;
@@ -237,7 +237,7 @@ namespace MyKittenPaint
 		public void OnToolSelectionChangedTo( ToolType type ){	The_toolsUC.ChangeCtrlState_WhenCurrSelToolChanged(type);	}
 
 		/// <inheritdoc/>
-		public LineTool.Settings CraeteLineToolSetting(){	return The_toolsUC.CraeteLineToolSetting();	}
+		public LineTool.Settings CreateLineToolSetting(){	return The_toolsUC.CraeteLineToolSetting();	}
 
 		/// <inheritdoc/>
 		public int GetEraserToolSize(){	return The_toolsUC.EraserToolSize;	}
@@ -469,6 +469,41 @@ namespace MyKittenPaint
 			}
 		}
 
+		//モノクロBMPとしてExport
+		private void ExportAsMonoBMP_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if( !m_Presenter.CanShowModalDlg() )return;
+
+			string FilePath = "";
+			using( var sfd = new SaveFileDialog() )
+			{
+				sfd.Filter = "Monochrome BMP(*.bmp)|*.bmp";
+				sfd.FileName = "untitled";
+				sfd.FilterIndex = 1;
+				sfd.OverwritePrompt = true;
+				if( sfd.ShowDialog() != DialogResult.OK )return;
+
+				FilePath = sfd.FileName;
+			}
+
+			//
+			try
+			{
+				if( !m_Presenter.ExportAsMonoBMP(FilePath) )
+				{
+					MessageBox.Show( this, "Not possible currently...", "Export was not executed" );
+					return;
+				}
+			}
+			catch( Exception ex )
+			{
+				MessageBox.Show( this, ex.Message + Environment.NewLine + "(" + FilePath + ")", "Export failed" );
+				return;
+			}
+
+			InfoSpace_toolStripStatusLabel.Text = "[" + DateTime.Now.ToLongTimeString() + "] Exported " + System.IO.Path.GetFileName(FilePath);
+		}
+
 		#endregion
 		//-----------------------------------
 		#region Edit Menu
@@ -649,5 +684,6 @@ namespace MyKittenPaint
 		private void RightColor_ToolStripMenuItem_Click( object sender, EventArgs e ){	EditDrawColor(1);	}
 
 		#endregion
+
 	}
 }

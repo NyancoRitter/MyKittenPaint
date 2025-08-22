@@ -132,6 +132,22 @@ namespace MyKittenPaint
 		}
 
 		/// <summary>
+		/// 現在の画像をモノクロBMPに変換したものを出力する．
+		/// この処理は <see cref="LastSaveLoadFilePath"/> を変更しない．
+		/// </summary>
+		/// <param name="SaveFilePath">保存パス</param>
+		/// <returns>
+		/// 実施したか否か．状況的に実施できない場合にはfalseを返す．
+		/// 実施した（成功した）場合にはtrue．
+		/// </returns>
+		public bool ExportAsMonoBMP( string SaveFilePath )
+		{
+			if( m_CurrState.IsBusy() )return false;
+			m_Content.ExportAsMonoBMP( SaveFilePath );
+			return true;
+		}
+
+		/// <summary>
 		/// 選択範囲を指定ファイル名で保存する．
 		/// 保存処理自体の失敗時には例外が送出されるので呼び出し側でcatchする必要がある．
 		/// </summary>
@@ -946,7 +962,7 @@ namespace MyKittenPaint
 					m_CurrTool = m_BrushTool;
 					return true;
 				case ToolType.Line:
-					m_LineTool.Setup( Owner.m_DrawColor[iDrawColor], Owner.m_IView.CraeteLineToolSetting() );
+					m_LineTool.Setup( Owner.m_DrawColor[iDrawColor], Owner.m_IView.CreateLineToolSetting() );
 					m_CurrTool = m_LineTool;
 					return true;
 				case ToolType.RectAreaSelect:

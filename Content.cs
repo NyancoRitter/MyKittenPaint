@@ -184,6 +184,54 @@ namespace MyKittenPaint
 		/// <returns>判定結果．同一と思われるならtrue</returns>
 		public bool IsSame( Bitmap BMP ){	return Util.IsSame( m_BMP, BMP );	}
 
+		/// <summary>
+		/// 指定ファイル名で画像をモノクロBMPとして保存する．
+		/// 失敗時には例外が送出される．
+		/// </summary>
+		/// <param name="ExportFilePath">保存パス</param>
+		public void ExportAsMonoBMP( string ExportFilePath )
+		{
+			using( var ExportImg = CvtToMonoBMP() )
+			{	ExportImg.Save( ExportFilePath, System.Drawing.Imaging.ImageFormat.Bmp );	}
+		}
+
+		#endregion
+		//-----------------------------------
+		#region private
+
+		/// <summary>m_BMP をモノクロBMPに変換したものを生成して返す</summary>
+		/// <returns>結果のモノクロBMP</returns>
+		private Bitmap CvtToMonoBMP()
+		{
+			Bitmap MonoBmp = new Bitmap( m_BMP.Width, m_BMP.Height, System.Drawing.Imaging.PixelFormat.Format1bppIndexed );
+			var OutData = MonoBmp.LockBits( new Rectangle( 0,0, MonoBmp.Width,MonoBmp.Height ), System.Drawing.Imaging.ImageLockMode.WriteOnly, MonoBmp.PixelFormat );
+
+			const int SrcBPP = 3;	//Bytes per Pixel
+			var SrcData = m_BMP.LockBits( new Rectangle( 0,0, m_BMP.Width,m_BMP.Height ), System.Drawing.Imaging.ImageLockMode.ReadOnly, m_BMP.PixelFormat );
+
+			unsafe
+			{
+				for( int y=0; y<m_BMP.Height; ++y )
+				{
+					Byte* pSrc = (Byte*)SrcData.Scan0.ToPointer() + SrcData.Stride*y;
+					Byte* pOut = (Byte*)OutData.Scan0.ToPointer() + OutData.Stride*y;
+					for( int x=0; x<m_BMP.Width; ++x )
+					{
+						int OutBitPos = ( x & 0x07 );
+						if( pSrc[0]+pSrc[1]+pSrc[2] >= 128*3 )  //※閾値は単純な固定実装
+						{	*pOut |= (byte)( 0x80 >> OutBitPos );	}
+
+						pSrc += SrcBPP;
+						if( OutBitPos == 7 ){	++pOut;	}
+					}
+				}
+			}
+			m_BMP.UnlockBits(SrcData);
+			MonoBmp.UnlockBits(OutData);
+
+			return MonoBmp;
+		}
+
 		#endregion
 	}
 }

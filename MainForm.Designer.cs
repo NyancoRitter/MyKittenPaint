@@ -76,14 +76,16 @@ namespace MyKittenPaint
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.ShowGrid_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.GridSize_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.Color_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.LeftColor_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.RightColor_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Settings_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ConfirmAtSave_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ShowFullPathOnCaption_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Help_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Version_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.Color_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.LeftColor_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.RightColor_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.ExportAsMonoBMP_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			this.Main_toolStripContainer.BottomToolStripPanel.SuspendLayout();
 			this.Main_toolStripContainer.ContentPanel.SuspendLayout();
 			this.Main_toolStripContainer.TopToolStripPanel.SuspendLayout();
@@ -367,7 +369,9 @@ namespace MyKittenPaint
             this.Open_ToolStripMenuItem,
             this.toolStripSeparator1,
             this.Save_ToolStripMenuItem,
-            this.SaveAs_ToolStripMenuItem});
+            this.SaveAs_ToolStripMenuItem,
+            this.toolStripSeparator7,
+            this.ExportAsMonoBMP_ToolStripMenuItem});
 			this.File_ToolStripMenuItem.Name = "File_ToolStripMenuItem";
 			this.File_ToolStripMenuItem.Size = new System.Drawing.Size(63, 24);
 			this.File_ToolStripMenuItem.Text = "File(&F)";
@@ -375,34 +379,34 @@ namespace MyKittenPaint
 			// New_ToolStripMenuItem
 			// 
 			this.New_ToolStripMenuItem.Name = "New_ToolStripMenuItem";
-			this.New_ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+			this.New_ToolStripMenuItem.Size = new System.Drawing.Size(318, 26);
 			this.New_ToolStripMenuItem.Text = "New(&N)...";
 			this.New_ToolStripMenuItem.Click += new System.EventHandler(this.New_ToolStripMenuItem_Click);
 			// 
 			// Open_ToolStripMenuItem
 			// 
 			this.Open_ToolStripMenuItem.Name = "Open_ToolStripMenuItem";
-			this.Open_ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+			this.Open_ToolStripMenuItem.Size = new System.Drawing.Size(318, 26);
 			this.Open_ToolStripMenuItem.Text = "Open(&O)...";
 			this.Open_ToolStripMenuItem.Click += new System.EventHandler(this.Open_ToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(221, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(315, 6);
 			// 
 			// Save_ToolStripMenuItem
 			// 
 			this.Save_ToolStripMenuItem.Name = "Save_ToolStripMenuItem";
 			this.Save_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.Save_ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+			this.Save_ToolStripMenuItem.Size = new System.Drawing.Size(318, 26);
 			this.Save_ToolStripMenuItem.Text = "Save(&W)";
 			this.Save_ToolStripMenuItem.Click += new System.EventHandler(this.Save_ToolStripMenuItem_Click);
 			// 
 			// SaveAs_ToolStripMenuItem
 			// 
 			this.SaveAs_ToolStripMenuItem.Name = "SaveAs_ToolStripMenuItem";
-			this.SaveAs_ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+			this.SaveAs_ToolStripMenuItem.Size = new System.Drawing.Size(318, 26);
 			this.SaveAs_ToolStripMenuItem.Text = "Save As(&S)...";
 			this.SaveAs_ToolStripMenuItem.Click += new System.EventHandler(this.SaveAs_ToolStripMenuItem_Click);
 			// 
@@ -523,19 +527,19 @@ namespace MyKittenPaint
 			// FlipRotate_ToolStripMenuItem
 			// 
 			this.FlipRotate_ToolStripMenuItem.Name = "FlipRotate_ToolStripMenuItem";
-			this.FlipRotate_ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+			this.FlipRotate_ToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
 			this.FlipRotate_ToolStripMenuItem.Text = "Flip/Rotate(&F)...";
 			this.FlipRotate_ToolStripMenuItem.Click += new System.EventHandler(this.FlipRotate_ToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(221, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(197, 6);
 			// 
 			// Size_SToolStripMenuItem
 			// 
 			this.Size_SToolStripMenuItem.Name = "Size_SToolStripMenuItem";
-			this.Size_SToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+			this.Size_SToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
 			this.Size_SToolStripMenuItem.Text = "Change Size(&S)...";
 			this.Size_SToolStripMenuItem.Click += new System.EventHandler(this.Size_SToolStripMenuItem_Click);
 			// 
@@ -578,6 +582,29 @@ namespace MyKittenPaint
 			this.GridSize_ToolStripMenuItem.Text = "Grid Settings(&S)...";
 			this.GridSize_ToolStripMenuItem.Click += new System.EventHandler(this.GridSize_ToolStripMenuItem_Click);
 			// 
+			// Color_ToolStripMenuItem
+			// 
+			this.Color_ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.LeftColor_ToolStripMenuItem,
+            this.RightColor_ToolStripMenuItem});
+			this.Color_ToolStripMenuItem.Name = "Color_ToolStripMenuItem";
+			this.Color_ToolStripMenuItem.Size = new System.Drawing.Size(78, 24);
+			this.Color_ToolStripMenuItem.Text = "Color(&C)";
+			// 
+			// LeftColor_ToolStripMenuItem
+			// 
+			this.LeftColor_ToolStripMenuItem.Name = "LeftColor_ToolStripMenuItem";
+			this.LeftColor_ToolStripMenuItem.Size = new System.Drawing.Size(195, 26);
+			this.LeftColor_ToolStripMenuItem.Text = "Left Color(&L)...";
+			this.LeftColor_ToolStripMenuItem.Click += new System.EventHandler(this.LeftColor_ToolStripMenuItem_Click);
+			// 
+			// RightColor_ToolStripMenuItem
+			// 
+			this.RightColor_ToolStripMenuItem.Name = "RightColor_ToolStripMenuItem";
+			this.RightColor_ToolStripMenuItem.Size = new System.Drawing.Size(195, 26);
+			this.RightColor_ToolStripMenuItem.Text = "Right Color(&R)...";
+			this.RightColor_ToolStripMenuItem.Click += new System.EventHandler(this.RightColor_ToolStripMenuItem_Click);
+			// 
 			// Settings_ToolStripMenuItem
 			// 
 			this.Settings_ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -590,14 +617,14 @@ namespace MyKittenPaint
 			// ConfirmAtSave_ToolStripMenuItem
 			// 
 			this.ConfirmAtSave_ToolStripMenuItem.Name = "ConfirmAtSave_ToolStripMenuItem";
-			this.ConfirmAtSave_ToolStripMenuItem.Size = new System.Drawing.Size(276, 26);
+			this.ConfirmAtSave_ToolStripMenuItem.Size = new System.Drawing.Size(277, 26);
 			this.ConfirmAtSave_ToolStripMenuItem.Text = "Confirmation at \"Save\" time";
 			this.ConfirmAtSave_ToolStripMenuItem.Click += new System.EventHandler(this.ConfirmAtSave_ToolStripMenuItem_Click);
 			// 
 			// ShowFullPathOnCaption_ToolStripMenuItem
 			// 
 			this.ShowFullPathOnCaption_ToolStripMenuItem.Name = "ShowFullPathOnCaption_ToolStripMenuItem";
-			this.ShowFullPathOnCaption_ToolStripMenuItem.Size = new System.Drawing.Size(276, 26);
+			this.ShowFullPathOnCaption_ToolStripMenuItem.Size = new System.Drawing.Size(277, 26);
 			this.ShowFullPathOnCaption_ToolStripMenuItem.Text = "Show Full Path on Caption";
 			this.ShowFullPathOnCaption_ToolStripMenuItem.Click += new System.EventHandler(this.ShowFullPathOnCaption_ToolStripMenuItem_Click);
 			// 
@@ -612,32 +639,21 @@ namespace MyKittenPaint
 			// Version_ToolStripMenuItem
 			// 
 			this.Version_ToolStripMenuItem.Name = "Version_ToolStripMenuItem";
-			this.Version_ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+			this.Version_ToolStripMenuItem.Size = new System.Drawing.Size(168, 26);
 			this.Version_ToolStripMenuItem.Text = "Version(&V)...";
 			this.Version_ToolStripMenuItem.Click += new System.EventHandler(this.Version_ToolStripMenuItem_Click);
 			// 
-			// Color_ToolStripMenuItem
+			// ExportAsMonoBMP_ToolStripMenuItem
 			// 
-			this.Color_ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.LeftColor_ToolStripMenuItem,
-            this.RightColor_ToolStripMenuItem});
-			this.Color_ToolStripMenuItem.Name = "Color_ToolStripMenuItem";
-			this.Color_ToolStripMenuItem.Size = new System.Drawing.Size(78, 24);
-			this.Color_ToolStripMenuItem.Text = "Color(&C)";
+			this.ExportAsMonoBMP_ToolStripMenuItem.Name = "ExportAsMonoBMP_ToolStripMenuItem";
+			this.ExportAsMonoBMP_ToolStripMenuItem.Size = new System.Drawing.Size(318, 26);
+			this.ExportAsMonoBMP_ToolStripMenuItem.Text = "Export As Monochrome BMP (&M)...";
+			this.ExportAsMonoBMP_ToolStripMenuItem.Click += new System.EventHandler(this.ExportAsMonoBMP_ToolStripMenuItem_Click);
 			// 
-			// LeftColor_ToolStripMenuItem
+			// toolStripSeparator7
 			// 
-			this.LeftColor_ToolStripMenuItem.Name = "LeftColor_ToolStripMenuItem";
-			this.LeftColor_ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-			this.LeftColor_ToolStripMenuItem.Text = "Left Color(&L)...";
-			this.LeftColor_ToolStripMenuItem.Click += new System.EventHandler(this.LeftColor_ToolStripMenuItem_Click);
-			// 
-			// RightColor_ToolStripMenuItem
-			// 
-			this.RightColor_ToolStripMenuItem.Name = "RightColor_ToolStripMenuItem";
-			this.RightColor_ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-			this.RightColor_ToolStripMenuItem.Text = "Right Color(&R)...";
-			this.RightColor_ToolStripMenuItem.Click += new System.EventHandler(this.RightColor_ToolStripMenuItem_Click);
+			this.toolStripSeparator7.Name = "toolStripSeparator7";
+			this.toolStripSeparator7.Size = new System.Drawing.Size(315, 6);
 			// 
 			// MainForm
 			// 
@@ -742,6 +758,8 @@ namespace MyKittenPaint
 		private System.Windows.Forms.ToolStripMenuItem Color_ToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem LeftColor_ToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem RightColor_ToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+		private System.Windows.Forms.ToolStripMenuItem ExportAsMonoBMP_ToolStripMenuItem;
 	}
 }
 

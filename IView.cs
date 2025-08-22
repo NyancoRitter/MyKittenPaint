@@ -67,7 +67,7 @@ namespace MyKittenPaint
 
 		/// <summary>現在のGUI状態から直線描画ツールの設定を生成して返す</summary>
 		/// <returns>設定</returns>
-		LineTool.Settings CraeteLineToolSetting();
+		LineTool.Settings CreateLineToolSetting();
 
 		/// <summary>現在のGUI状態から消しゴムツールの描画サイズを返す</summary>
 		/// <returns>正方形の一片の長さ</returns>
